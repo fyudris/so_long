@@ -223,7 +223,8 @@ int	main(void)
 
 	data->mlx_ptr = mlx_init();
 	if (!data->mlx_ptr)
-		return (1);
+		return (1);#include <mlx.h>
+#include <stdlib.h>
 	data->win_ptr = mlx_new_window(data->mlx_ptr, WINDOW_WIDTH, WINDOW_HEIGHT, "Closable Window");
 	if (!data->win_ptr)
 		return (1);
@@ -243,4 +244,110 @@ int	main(void)
 	return (0);
 }
 ```
+
+#### Step 3: Drawing - Pixels and Images
+There are two main ways to draw:
+1. `mlx_pixel_put()`: Easy for drawing single pixels. **Very slow** for drawing many things.
+2. **Using Images**: The proper way. You created an in-memory "canvas" (an image), drwa all y our pixels to it, and then push theentire image to the window in one go (`mlx_put_image_to_window`). This is thousands of times faster.
+
+Let's modify `main` to draw a simple red square using the fast image method.
+
+```
+...
+```
+
+##### X-Course - What is endian?
+
+In short, Endianness refers to the order in which bytes of a multi-byte data word (like an integer or a color code) are stored in computer memory.
+
+Let's break that down with an analogy and a technical example.
+
+**The Analogy: Writing Down a Number**
+Imagine you have the number two hundred fifty-seven.
+
+A Big-Endian system is like how we write numbers in English. You write the most significant part first: 2 (hundreds), then 5 (tens), then 7 (ones). The "big end" comes first.
+A Little-Endian system would write the least significant part first: 7 (ones), then 5 (tens), then 2 (hundreds). The "little end" comes first.
+Computers do the same thing, but with bytes in memory.
+
+The Technical Example: A 32-bit Color
+In your code, you used a color: 0x00FF0000 (which is pure red). This is a 32-bit integer, which is made up of 4 bytes. Let's name them:
+```
+Byte 1: 0x00 (Alpha/transparency)
+Byte 2: 0xFF (Red)
+Byte 3: 0x00 (Green)
+Byte 4: 0x00 (Blue)
+```
+Now, let's say the computer wants to store this 4-byte color value starting at memory address `1000`.
+
+**Big-Endian (The "Natural" Order)**
+A big-endian machine stores the most significant byte (0x00) at the lowest memory address. It's intuitive to read.
+```
+Memory Address	Value Stored	Component
+1000			0x00			Alpha
+1001			0xFF			Red
+1002			0x00			Green
+1003			0x00			Blue
+```
+Most network protocols (like the internet's TCP/IP) and older processors (like Motorola 68000, PowerPC) are big-endian.
+
+**Little-Endian (The "Reversed" Order)**
+A little-endian machine stores the least significant byte (0x00) at the lowest memory address.
+```
+Memory Address	Value Stored	Component
+1000			0x00			Blue
+1001			0x00			Green
+1002			0xFF			Red
+1003			0x00			Alpha
+```
+Most modern consumer processors, including those from Intel and AMD (the x86 and x86-64 architectures in most desktops and laptops), are little-endian. Therefore, your Linux machine is almost certainly little-endian.
+
+Why Does This Matter for MiniLibX?
+When you call this function:
+```
+data.img.addr = mlx_get_data_addr(data.img.img_ptr, &data.img.bpp, &data.img.line_len, &data.img.endian);
+```
+You are asking MiniLibX for two things:
+1. A raw pointer to the image's memory (data.img.addr).
+2. Instructions on how to write to that memory correctly.
+The endian variable that mlx_get_data_addr fills for you is one of those crucial instructions. It will be set to 0 for little-endian systems and 1 for big-endian systems.
+
+Your my_pixel_put function was:
+```
+void my_pixel_put(t_img *img, int x, int y, int color)
+{
+    char    *dst;
+    dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
+    *(unsigned int*)dst = color; // <-- The critical line
+}
+```
+This line *(unsigned int*)dst = color; works perfectly regardless of endianness. Why? Because you are casting the destination pointer to an unsigned int* and writing the entire 4-byte integer (color) at once. The compiler knows the endianness of your system and automatically arranges the bytes of color in the correct order in memory.
+
+However, if you were to write one byte at a time, endianness would become critical. For example:
+
+```
+// THIS IS HOW YOU WOULD MANUALLY HANDLE ENDIANNESS
+char *dst = img->addr + (y * img->line_len + x * (img->bpp / 8));
+int red = 0xFF;
+int green = 0x00;
+int blue = 0x00;
+
+if (img->endian == 0) // Little Endian
+{
+    dst[0] = blue;
+    dst[1] = green;
+    dst[2] = red;
+    dst[3] = 0; // Alpha
+}
+else // Big Endian
+{
+    dst[0] = 0; // Alpha
+    dst[1] = red;
+    dst[2] = green;
+    dst[3] = blue;
+}
+```
+Conclusion: Do You Need to Worry?
+For your so_long project using MiniLibX, the answer is mostly no, as long as you write the full color integer at once.
+
+MiniLibX provides the endian variable so that if you want to write code that is portable between, say, an old Mac (Big-Endian) and a modern PC (Little-Endian), you can. By writing your pixel data a full int at a time, the compiler handles the byte order for you, making your life much easier. The important thing is that mlx_get_data_addr provides you the information in case you need it for more complex graphical operations
 
