@@ -88,6 +88,10 @@ SRC				+=	ft_print_pointer.c
 SRC				+=	ft_print_str.c
 SRC				+=	ft_print_unsigned_int.c
 
+vpath %.c $(SRC_DIR)/ft_gnl
+SRC             +=  get_next_line.c
+SRC				+=	get_next_line_utils.c
+
 # Object Files
 OBJ			:=	$(SRC:.c=.o)
 OBJ			:=	$(addprefix $(OBJ_DIR)/, $(SRC:.c=.o))
@@ -101,24 +105,38 @@ DEPS		:=	$(OBJ:.o=.d)
 
 all: $(NAME)
 
-$(NAME): $(OBJ) | $(OBJ_DIR)
-	$(AR) $@ $^
+# # --- PRETTY LIBRARY CREATION RULE (MODIFIED) ---
+$(NAME): $(OBJ)
+	@$(AR) $@ $^
+	@printf "$(GREEN)✓ Library '$@' created successfully!\n$(RESET)"
 
+# --- PRETTY COMPILATION RULE (MODIFIED) ---
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
+	@printf "$(YELLOW)Compiling:$(RESET) %s\n" $<
+	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
+# --- PRETTY DIRECTORY CREATION RULE (MODIFIED) ---
 $(OBJ_DIR):
-	$(MKDIR) $(OBJ_DIR)
+	@$(MKDIR) $(OBJ_DIR)
+	@printf "$(BLUE_BOLD)Created object directory:$(RESET) $@\n"
 
+# --- PRETTY CLEAN RULES (MODIFIED) ---
 clean:
-	$(RM) $(OBJ)
-	$(RM) $(DEPS)
-	$(RM) -r $(OBJ_DIR)
+	@# The -r flag is for "recursive" to delete a directory.
+	@# The -f flag is for "force" to ignore nonexistent files.
+	@# We redirect errors to /dev/null and use '|| true' to prevent 'make' from
+	@# stopping if the directory doesn't exist yet.
+	@$(RM) -rf $(OBJ_DIR)
+	@printf "$(YELLOW)✓ Object files cleaned.\n$(RESET)"
 
 fclean: clean
-	$(RM) $(NAME)
+	@$(RM) -f $(NAME)
+	@printf "$(GREEN)✓ Final clean complete. Library removed.\n$(RESET)"
 
-re: fclean all
+
+re:
+	@$(MAKE) fclean --no-print-directory
+	@$(MAKE) all --no-print-directory
 
 .PHONY: all clean fclean re
 .SECONDARY:

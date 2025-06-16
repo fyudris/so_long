@@ -6,6 +6,7 @@
 .vs_code
 mlx_linux/
 obj/
+temp_assets/
 
 
 # Prerequisites
