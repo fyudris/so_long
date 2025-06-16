@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/08 17:46:56 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/04 15:09:07 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/16 19:59:02 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,4 +69,5 @@ void		ft_lstiter(t_list *lst, void (*f)(void *));
 t_list		*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 void		ft_free_array(char **array);
 long		ft_atol(const char *str);
+void		ft_print_error(char *message);
 #endif
