@@ -55,6 +55,7 @@ SRC				+=	ft_putchar_fd.c
 SRC				+=	ft_putendl_fd.c
 SRC				+=	ft_putnbr_fd.c
 SRC				+=	ft_putstr_fd.c
+SRC				+=	ft_print_error.c
 
 vpath %.c $(SRC_DIR)/ft_str
 SRC				+=	ft_split.c

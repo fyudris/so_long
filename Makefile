@@ -6,75 +6,89 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/17 02:10:15 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/17 03:30:38 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-# --- CONFIG ---
+
+# === CONFIGURATION ===
 NAME            := so_long
 CC              := cc
-RM              := /bin/rm -f
+RM              := rm -f
 MKDIR           := /bin/mkdir -p
 
-# --- DIRECTORIES ---
+# === DIRECTORIES ===
 OBJ_DIR         := obj
 SRC_DIR         := srcs
 INC_DIR         := include
 LIBFT_DIR       := libft
 MLX_DIR         := mlx_linux
 
-# --- FLAGS ---
-CFLAGS          := -Wall -Wextra -Werror
-CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/includes -I$(MLX_DIR)
-# The -MD flag generates dependency files automatically
-CPPFLAGS        += -MD
-
-# --- LIBRARIES ---
-# MiniLibX flags for linking
-MLX_FLAGS       := -L$(MLX_DIR) -lmlx_Linux -lXext -lX11 -lm -lz
-# Libft library path
+# === LIBRARIES ===
 LIBFT           := $(LIBFT_DIR)/libft.a
+MLX_FLAGS       := -L$(MLX_DIR) -lmlx -lXext -lX11 -lm -lz
 
-# --- SOURCE FILES ---
-# Automatically find all .c files in the source directory and subdirectories
-SRCS            := $(shell find $(SRC_DIR) -name '*.c')
+# === FLAGS ===
+CFLAGS          := -Wall -Wextra -Werror -g
+CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/includes -I$(MLX_DIR) -MD
 
-# --- OBJECT FILES ---
-# Generate object file paths from source file paths
-OBJS            := $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
+# === SOURCE FILES (Listed with vpath) ===
+SRCS            :=
+# --- Main Files ---
+vpath %.c $(SRC_DIR)
+SRCS            += main.c
+SRCS            += init.c
 
-# --- DEPENDENCIES ---
-# Include the generated dependency files
+# --- Game Logic Files ---
+# vpath %.c $(SRC_DIR)/game
+# # SRCS            += hooks.c
+# SRCS            += logic.c
+
+# --- Parsing Files ---
+vpath %.c $(SRC_DIR)/parsing
+SRCS            += parse_map.c
+# SRCS            += validate_path.c
+
+# --- Rendering Files ---
+# vpath %.c $(SRC_DIR)/rendering
+# SRCS            += render.c
+
+# === OBJECTS & DEPENDENCIES ===
+OBJS            := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
 DEPS            := $(OBJS:.o=.d)
--include $(DEPS)
 
-# --- COLORS (for pretty printing) ---
+# --- COLORS ---
 GREEN           := \033[0;32m
 YELLOW          := \033[0;33m
+BLUE_BOLD       := \033[1;34m
 RESET           := \033[0m
 
-# --- TARGETS ---
+# === RULES ===
 .DEFAULT_GOAL   := all
+
+-include $(DEPS)
 
 all: $(NAME)
 
-# Link the final executable
-$(NAME): $(LIBFT) $(OBJS)
-	@$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft $(MLX_FLAGS) -o $(NAME)
+$(NAME): $(OBJS) $(LIBFT) $(MLX_DIR)/libmlx.a
+	@printf "$(BLUE_BOLD)Linking executable:$(RESET) $@\n"
+	@$(CC) $(OBJS) -L$(LIBFT_DIR) -lft $(MLX_FLAGS) -o $(NAME)
 	@printf "$(GREEN)✓ Project '$@' created successfully!$(RESET)\n"
 
-# Compile object files from source files
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	@printf "$(YELLOW)Compiling:$(RESET) %s\n" $<
+# This rule now works with vpath to find the source files
+$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+	@$(MKDIR) -p $(@D)
+	@printf "$(YELLOW)Compiling:$(RESET) $<\n"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-# Create object directory if it doesn't exist
 $(OBJ_DIR):
-	@$(MKDIR) $(OBJ_DIR)
+	@$(MKDIR) -p $(OBJ_DIR)
 
-# Build the libft library using its own Makefile
 $(LIBFT):
 	@$(MAKE) -s -C $(LIBFT_DIR)
+
+$(MLX_DIR)/libmlx.a:
+	@$(MAKE) -s -C $(MLX_DIR)
 
 # --- CLEAN RULES ---
 clean:

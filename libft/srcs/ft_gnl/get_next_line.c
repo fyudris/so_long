@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/13 19:52:23 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 03:25:24 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ char	*append_and_free(char *buffer, char *new_content)
 {
 	char	*temp;
 
-	temp = ft_strjoin(buffer, new_content);
+	temp = ft_strjoin_gnl(buffer, new_content);
 	free(buffer);
 	return (temp);
 }
@@ -59,7 +59,7 @@ char	*extract_remaining(char *buffer)
 		free(buffer);
 		return (NULL);
 	}
-	remaining = ft_calloc((ft_strlen(buffer) - i), sizeof(char));
+	remaining = ft_calloc_gnl((ft_strlen_gnl(buffer) - i), sizeof(char));
 	if (!remaining)
 	{
 		free(buffer);
@@ -96,9 +96,9 @@ char	*extract_line(char *buffer)
 		i++;
 	// FIX: Correctly allocate memory whether a newline is found or not.
 	if (buffer[i] == '\n')
-		line = ft_calloc(i + 2, sizeof(char));
+		line = ft_calloc_gnl(i + 2, sizeof(char));
 	else
-		line = ft_calloc(i + 1, sizeof(char));
+		line = ft_calloc_gnl(i + 1, sizeof(char));
 	if (!line)
 		return (NULL);
 	i = 0;
@@ -131,8 +131,8 @@ char	*read_from_fd(int fd, char *result)
 	int		bytes_read;
 
 	if (!result)
-		result = ft_calloc(1, 1);
-	buffer = ft_calloc(BUFFER_SIZE + 1, sizeof(char));
+		result = ft_calloc_gnl(1, 1);
+	buffer = ft_calloc_gnl(BUFFER_SIZE + 1, sizeof(char));
 	if (!buffer)
 		return (NULL);
 	bytes_read = 1;
@@ -147,7 +147,7 @@ char	*read_from_fd(int fd, char *result)
 		}
 		buffer[bytes_read] = 0;
 		result = append_and_free(result, buffer);
-		if (ft_strchr(buffer, '\n'))
+		if (ft_strchr_gnl(buffer, '\n'))
 			break ;
 	}
 	free (buffer);
@@ -175,7 +175,7 @@ char	*get_next_line(int fd)
 	if (fd < 0 || fd >= FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (0);
 	// Only read from the file if the buffer for this fd doesn't already have a line.
-	if (!buffer[fd] || !ft_strchr(buffer[fd], '\n'))
+	if (!buffer[fd] || !ft_strchr_gnl(buffer[fd], '\n'))
 	{
 		buffer[fd] = read_from_fd(fd, buffer[fd]);
 	}

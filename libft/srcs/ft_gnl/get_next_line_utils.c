@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 15:17:18 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/13 19:52:30 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 03:26:59 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
  * @param str A pointer to the null-terminated string.
  * @return The length of the string.
  */
-size_t	ft_strlen(const char *str)
+size_t	ft_strlen_gnl(const char *str)
 {
 	const char	*s;
 
@@ -34,7 +34,7 @@ size_t	ft_strlen(const char *str)
  * @param s A pointer to the memory area to fill.
  * @param n The number of bytes to be set to zero.
  */
-void	ft_bzero(void *s, size_t n)
+void	ft_bzero_gnl(void *s, size_t n)
 {
 	unsigned char	*ptr;
 
@@ -50,13 +50,13 @@ void	ft_bzero(void *s, size_t n)
  * @param elem_size The size in bytes of each element.
  * @return A pointer to the allocated memory, or NULL if the allocation fails.
  */
-void	*ft_calloc(size_t elem_count, size_t elem_size)
+void	*ft_calloc_gnl(size_t elem_count, size_t elem_size)
 {
 	void	*ptr;
 
 	ptr = malloc(elem_count * elem_size);
 	if (ptr)
-		ft_bzero(ptr, elem_count * elem_size);
+		ft_bzero_gnl(ptr, elem_count * elem_size);
 	return (ptr);
 }
 
@@ -68,7 +68,7 @@ void	*ft_calloc(size_t elem_count, size_t elem_size)
  * @return A pointer to the first occurrence of the character in s, or NULL
  if the character is not found.
  */
-char	*ft_strchr(const char *string, int searchChar)
+char	*ft_strchr_gnl(const char *string, int searchChar)
 {
 	char	*str;
 
@@ -89,7 +89,7 @@ char	*ft_strchr(const char *string, int searchChar)
  * @return A pointer to the newly allocated concatenated string,
  or NULL on error.
  */
-char	*ft_strjoin(const char *s1, const char *s2)
+char	*ft_strjoin_gnl(const char *s1, const char *s2)
 {
 	char	*result;
 	char	*temp;
@@ -98,8 +98,8 @@ char	*ft_strjoin(const char *s1, const char *s2)
 
 	if (!s1 || !s2)
 		return (NULL);
-	len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
+	len1 = ft_strlen_gnl(s1);
+	len2 = ft_strlen_gnl(s2);
 	result = malloc(len1 + len2 + 1);
 	if (!result)
 		return (NULL);

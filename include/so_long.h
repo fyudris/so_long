@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 02:15:30 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 03:20:46 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,9 @@
 # include <stdlib.h> // For malloc, free, exit
 # include <fcntl.h> // For open
 # include <unistd.h> // For read, close
+# include "../libft/includes/libft.h"
 # include "../libft/includes/ft_printf.h"
+# include "../libft/includes/get_next_line.h"
 
 /* ----- Game Constants ------ */
 # define TILE_SIZE 32 // The size in pixels of one tile sprite
@@ -101,5 +103,11 @@ typedef struct  s_data
 /* ----- Function Prototypes ----- */
 
 
+// init.c
+void	init_game_data(t_data *data);
 
+// Map Parsing
+ void	parse_map(char *filename, t_data *data);
+ 
+ 
 #endif
