@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 02:54:15 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 03:31:18 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 13:31:50 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,12 @@ static void	read_map_to_list(int fd, t_list **map_list_head, t_data *data)
 	{
 		line = get_next_line(fd);
 		if (!line)
-			break;
+			break ;
 		if (is_first_line)
 		{
+			// Measure the length of first line
 			data->map.size.x = ft_strlen(line);
+			// Substract 1 if there's a '\n' at the end
 			if (line[data->map.size.x - 1] == '\n')
 				data->map.size.x--;
 			is_first_line = 0;
@@ -92,8 +94,8 @@ static void	convert_list_to_grid(t_list *head, t_data *data)
  * @param data A pointer to the main game data struct.
  * 
  */
- void	parse_map(char *filename, t_data *data)
- {
+void	parse_map(char *filename, t_data *data)
+{
 	int		fd;
 	t_list	*map_list_head;
 
@@ -108,6 +110,6 @@ static void	convert_list_to_grid(t_list *head, t_data *data)
 	close(fd);
 	convert_list_to_grid(map_list_head, data);
 	ft_lstclear(&map_list_head, free);
-
-	// TODO: validate content and 
- }
+	
+	validate_map_content(data);
+}

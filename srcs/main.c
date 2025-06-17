@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:33:00 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 02:37:11 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 12:58:24 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static void	print_map(t_data *data)
 	ft_printf("--- Map Read ---\n");
 	ft_printf("Width: %d, Height: %d\n", data->map.size.x, data->map.size.y);
 	y = 0;
-	while(y < data->map.size.y)
+	while (y < data->map.size.y)
 	{
 		ft_printf("%s\n", data->map.grid[y]);
 		y++;
@@ -40,9 +40,6 @@ int	main(int argc, char **argv)
 	}
 	init_game_data(&data);
 	parse_map(argv[1], &data);
-	
-	// Test parser
 	print_map(&data);
-
 	return (0);
 }

@@ -6,12 +6,12 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:44:55 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 03:27:08 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 12:36:01 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_BONUS_H
-# define GET_NEXT_LINE_BONUS_H
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
 # include <limits.h>
 # include <stdlib.h>

@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:41:05 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 03:25:24 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 12:38:22 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,6 @@ char	*extract_line(char *buffer)
 		return (NULL);
 	while (buffer[i] && buffer[i] != '\n')
 		i++;
-	// FIX: Correctly allocate memory whether a newline is found or not.
 	if (buffer[i] == '\n')
 		line = ft_calloc_gnl(i + 2, sizeof(char));
 	else
@@ -174,7 +173,6 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || fd >= FOPEN_MAX || BUFFER_SIZE <= 0)
 		return (0);
-	// Only read from the file if the buffer for this fd doesn't already have a line.
 	if (!buffer[fd] || !ft_strchr_gnl(buffer[fd], '\n'))
 	{
 		buffer[fd] = read_from_fd(fd, buffer[fd]);

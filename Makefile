@@ -6,7 +6,7 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/17 03:30:38 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/17 13:33:14 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -47,7 +47,7 @@ SRCS            += init.c
 # --- Parsing Files ---
 vpath %.c $(SRC_DIR)/parsing
 SRCS            += parse_map.c
-# SRCS            += validate_path.c
+SRCS            += validate_content.c
 
 # --- Rendering Files ---
 # vpath %.c $(SRC_DIR)/rendering
@@ -104,6 +104,11 @@ fclean: clean
 re:
 	@$(MAKE) fclean --no-print-directory
 	@$(MAKE) all --no-print-directory
+
+# --- NORMINETTE RULE ---
+norminette:
+	@echo "Checking C files in srcs/, include/, and libft/ for norm compliance..."
+	@norminette srcs/ include/ libft/
 
 .PHONY: all clean fclean re
 .SECONDARY:
