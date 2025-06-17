@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 14:15:02 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 20:10:32 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,12 @@
 
 /* ----- Game Constants ----- */
 
-# define TILE_SIZE 32
+// # define TILE_SIZE 24
+# define ORIGINAL_TILE_SIZE 24
+# define SCALE_FACTOR 3
+# define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR) // e.g., 48
+# define ANIMATION_FRAMES 4 // 4 frames per direction 
+# define ANIMATION_SPEED 100 // higher number = slower animation
 
 /* ----- Keycodes for Linux X11 ----- */
 
@@ -35,6 +40,15 @@
 # define KEY_S 115
 # define KEY_D 100
 # define KEY_ESC 65307
+
+/* ----- Player Direction ----- */
+typedef enum	e_direction
+{
+	DOWN,
+	UP,
+	LEFT,
+	RIGHT
+} t_direction;
 
 /* ----- Data Structures ----- */
 
@@ -49,8 +63,12 @@ typedef struct s_vector
 typedef struct s_img
 {
 	void	*ptr;
+	void	*addr; // Pointer to the raw pixel data buffer
 	int		width;
 	int		height;
+	int		bpp; // Bits per pixel
+	int		line_len; // The number of bytes in one horizon
+	int		endian; // The endianess of the image data
 }	t_img;
 
 // Map data
@@ -73,6 +91,10 @@ typedef struct s_game_rules
 // Hold game textures
 typedef struct s_textures
 {
+	// t_img	player_down[ANIM_FRAMES];
+	// t_img	player_up[ANIM_FRAMES];
+	// t_img	player_left[ANIM_FRAMES];
+	// t_img	player_right[ANIM_FRAMES];
 	t_img	player;
 	t_img	player_txt;
 	t_img	wall;
@@ -97,6 +119,10 @@ typedef struct s_data
 	void			*win;
 	t_map			map;
 	t_vector		player_pos;
+	t_direction		player_dir;
+	int				anim_fram;
+	int				anim_timer;
+	bool			is_moving;
 	int				move_count;
 	bool			keys_collected;
 	t_game_rules	rules;
@@ -107,6 +133,7 @@ typedef struct s_data
 
 // init.c
 void	init_game_data(t_data *data);
+void	init_mlx(t_data *data);
 
 // Map Parsing
 void	parse_map(char *filename, t_data *data);
@@ -116,5 +143,16 @@ void	validate_map_content(t_data *data);
 
 // Path Validation
 void	validate_path(t_data *data);
+
+// Rendering
+unsigned int	get_pixel_from_img(t_img *img, int x, int y);
+void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
+int	render_frame(t_data *data);
+void	load_all_textures(t_data *data);
+void	upscale_sprite(t_img *dest, t_img *src);
+
+// Game
+int	handle_close_window(t_data *data);
+int	handle_keypress(int keycode, t_data *data);
 
 #endif

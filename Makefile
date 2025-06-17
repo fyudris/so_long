@@ -6,7 +6,7 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/17 14:15:14 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/17 18:54:20 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,8 +40,8 @@ SRCS            += main.c
 SRCS            += init.c
 
 # --- Game Logic Files ---
-# vpath %.c $(SRC_DIR)/game
-# # SRCS            += hooks.c
+vpath %.c $(SRC_DIR)/game
+SRCS            += hooks.c
 # SRCS            += logic.c
 
 # --- Parsing Files ---
@@ -51,8 +51,10 @@ SRCS            += validate_content.c
 SRCS            += validate_path.c
 
 # --- Rendering Files ---
-# vpath %.c $(SRC_DIR)/rendering
-# SRCS            += render.c
+vpath %.c $(SRC_DIR)/rendering
+SRCS            += render.c
+SRCS            += image.c
+SRCS            += textures.c
 
 # === OBJECTS & DEPENDENCIES ===
 OBJS            := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
