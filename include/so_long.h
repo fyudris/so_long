@@ -6,35 +6,100 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/13 14:27:31 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 02:15:30 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
+/* ----- Includes ----- */
 # include <mlx.h>
-# include <stdlib.h>
+# include <stdbool.h>
+# include <stdlib.h> // For malloc, free, exit
+# include <fcntl.h> // For open
+# include <unistd.h> // For read, close
 # include "../libft/includes/ft_printf.h"
 
-# define WINDOW_WIDTH 800
-# define WINDOW_HEIGHT 600
+/* ----- Game Constants ------ */
+# define TILE_SIZE 32 // The size in pixels of one tile sprite
+
+/* ----- Keycodes for Linux X11 ----- */
+# define KEY_W 119
+# define KEY_A 97
+# define KEY_S 115
+# define KEY_D 100
 # define KEY_ESC 65307
 
+/* ----- Data Structures ------ */
+
+// 2D coordinates
+typedef struct s_vector
+{
+    int x;
+    int y;
+}   t_vector;
+
+// Image/texture data
 typedef struct s_img
 {
-    void    *img_ptr;
-    char    *addr; // Pointer to the start of the image data
-    int     bpp; // Bits per pixel
-    int     line_len; // Size of one line in bytes
-    int     endian; // 0 for littel endian, 1 for big endian
-}   t_img;
+    void    *ptr;
+    int     width;
+    int     height;
+}  t_img;
 
-typedef struct s_data
+// Map data
+typedef struct s_map
 {
-    void    *mlx_ptr;
-    void    *win_ptr;
-    t_img   img; // Add the our image structure here
-}   t_data;
+    char        **grid; // Store game map layout
+    t_vector    size;
+    int         collectibles; // Total number of collectibles
+    int         players; // Count number of starting positions
+    int         exits; // Count number of exits
+}   t_map;
+
+// Manage the state of game rules
+typedef struct s_game_rules
+{
+    bool    key_is_activated;
+    bool    wall_is_pushable;
+}   t_game_rules;
+
+// Hold game textures
+typedef struct  s_textures
+{
+    t_img   player;
+    t_img   player_txt;
+    t_img   wall;
+    t_img   wall_txt;
+    t_img   fort_wall;
+    t_img   fort_wall_txt;
+    t_img   key;
+    t_img   key_txt;
+    t_img   door;
+    t_img   door_txt;
+    t_img   you_txt;
+    t_img   open_txt;
+    t_img   push_txt;
+    t_img   win_txt;
+    t_img   is_txt;
+}   t_texture;
+
+// Main game data struct, passed to all function
+typedef struct  s_data
+{
+    void            *mlx;
+    void            *win;
+    t_map           map;
+    t_vector        player_pos;
+    int             move_count;
+    bool            keys_collected;
+    t_game_rules    rules;
+    t_texture       textures;   
+} t_data;
+
+/* ----- Function Prototypes ----- */
+
+
 
 #endif
