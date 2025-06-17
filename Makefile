@@ -6,7 +6,7 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/17 13:33:14 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/17 14:15:14 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -48,6 +48,7 @@ SRCS            += init.c
 vpath %.c $(SRC_DIR)/parsing
 SRCS            += parse_map.c
 SRCS            += validate_content.c
+SRCS            += validate_path.c
 
 # --- Rendering Files ---
 # vpath %.c $(SRC_DIR)/rendering

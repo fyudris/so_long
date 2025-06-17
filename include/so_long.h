@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 13:28:08 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 14:15:02 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,5 +113,8 @@ void	parse_map(char *filename, t_data *data);
 
 // Map Validation
 void	validate_map_content(t_data *data);
+
+// Path Validation
+void	validate_path(t_data *data);
 
 #endif

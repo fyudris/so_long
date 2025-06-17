@@ -40,20 +40,43 @@ After iterating, check if the component counts are correct: exactly 1 Player, ex
 Create a maps/error_wall.ber with a gap in the surrounding wall. Your program should exit with an error.
 Create a maps/error_char.ber with an invalid character like 'X'. Your program should exit with an error.
 Create several maps/error_components.ber files: one with two 'P's, one with no 'E', one with no 'C'. Each should cause a specific error exit.
-Step 3: The Final Check - Path Validation
-The Goal: Verify that there is a valid path from the player's start to all collectibles and to the exit.
 
-The Plan:
+## Step 3: The Final Check - Path Validation
+### The Goal:
+The so_long subject requires you to "verify if there is a valid path in the map". This means you must programmatically prove that the player (P) can walk to every single collectible (C) and to the exit (E). This prevents impossible-to-win maps.
+
+### The Plan:
 This is the most complex validation step. The standard algorithm for this is Flood Fill.
 
-Create a Copy: Make a deep copy of data.map.grid. You cannot modify the original map.
-Find Start: Get the player's starting coordinates (x, y) that you stored when you counted the components.
-Implement Flood Fill: Create a recursive function, for example flood_fill(char **map_copy, int x, int y).
+Excellent! It's great to hear that all the content validation checks are working as expected. Your parser is now very robust.
+
+You are now ready for the final, and most complex, part of the validation process.
+
+The next step is Step 3: Path Validation.
+
+The Goal
+The so_long subject requires you to "verify if there is a valid path in the map". This means you must programmatically prove that the player (P) can walk to every single collectible (C) and to the exit (E). This prevents impossible-to-win maps.
+
+The Algorithm: Flood Fill
+The most common and straightforward way to solve this is with a Flood Fill algorithm. Think of it like using the "paint bucket" tool in an art program:
+
+1. You start at the player's position (P).
+2. You "fill" that tile, marking it as "visited".
+3. You then try to fill the adjacent tiles (up, down, left, right).
+4. You repeat this process, spreading out from the player's start until you have filled every single tile that isn't a wall.
+5. After the fill is complete, you check if all the original collectible and exit tiles have been "filled". If any of them were not reached, the map is invalid.
+
+CRITICAL: The flood fill must be performed on a copy of the map grid. If you modify your original map data, it will corrupt your game.
+How: 
+- Create a Copy: Make a deep copy of data.map.grid. You cannot modify the original map.
+- Find Start: Get the player's starting coordinates (x, y) that you stored when you counted the components.
+- Implement Flood Fill: Create a recursive function, for example flood_fill(char **map_copy, int x, int y).
 This function "fills" the current tile (e.g., changes it to an 'F' for "filled").
 It then recursively calls itself for the four adjacent tiles (up, down, left, right), but only if that tile is not a wall ('1') and has not already been filled.
 Check Reachability: After the flood fill recursion is complete, iterate through your original map grid. For every 'C' and 'E', check the corresponding coordinate in your copied, filled map.
 If any 'C' or 'E' position in the copy is not an 'F', it means the flood fill could not reach it. This is a pathing error, and the program must exit.
-How to Test This Step:
+
+### How to Test This Step:
 
 Create a maps/error_path.ber where a 'C' or the 'E' is completely walled off from the player. Your program must detect this and exit with a "No valid path" error.
 Run your program on your valid level1.ber and level2_spacious.ber. It should pass all validation steps without error.

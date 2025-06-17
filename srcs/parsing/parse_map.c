@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 02:54:15 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 13:31:50 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 14:16:02 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ void	parse_map(char *filename, t_data *data)
 	close(fd);
 	convert_list_to_grid(map_list_head, data);
 	ft_lstclear(&map_list_head, free);
-	
 	validate_map_content(data);
+	validate_path(data);
+	ft_printf("[CHECK] Map is fully valid!\n");
 }
