@@ -6,41 +6,11 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:10:08 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 19:19:04 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/17 21:10:07 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/so_long.h"
-
-/**
- * @brief A centralized cleanup function to free all allocated memory.
- *
- * This function should be called before the program exits to prevent memory
- * leaks.
- * It destroys all loaded MLX images and windows and frees the map grid.
- *
- * @param data A pointer to the main game data struct.
- */
-static void	cleanup_and_exit(t_data *data)
-{
-	// This is a partial list. You must destroy EVERY image you loaded.
-	if (data->textures.player.ptr)
-		mlx_destroy_image(data->mlx, data->textures.player.ptr);
-	if (data->textures.fort_wall.ptr)
-		mlx_destroy_image(data->mlx, data->textures.fort_wall.ptr);
-	// ... destroy all other textures ...
-
-	if (data->win)
-		mlx_destroy_window(data->mlx, data->win);
-	if (data->mlx)
-	{
-		mlx_destroy_display(data->mlx);
-		free(data->mlx);
-	}
-	// TODO: You should also have a function to free your char** map.grid
-	// free_map(data->map.grid);
-	exit(0);
-}
 
 /**
  * @brief Handles the event when the window's close button (red 'X') is clicked.
@@ -53,43 +23,65 @@ static void	cleanup_and_exit(t_data *data)
 int	handle_close_window(t_data *data)
 {
 	ft_printf("Closing window...\n");
-	cleanup_and_exit(data);
+	cleanup_and_exit(data, 0);
 	return (0);
 }
 
 /**
- * @brief Handles all keyboard press events.
+ * @brief Handles the event when a movement key is RELEASED.
+ * This is crucial for stopping the walking animation and returning to an idle 
+ * pose.
+ */
+int	handle_keyrelease(int keycode, t_data *data)
+{
+	if (keycode == KEY_W || keycode == KEY_A || keycode == KEY_S || keycode == KEY_D)
+	{
+		data->is_moving = false;
+		// Reset to the first frame (the idle pose) when movement stops.
+		data->anim_frame = 0;
+	}
+	return (0);
+}
+
+/**
+ * @brief Handles all keyboard PRESS events.
  *
- * This function checks for the ESC key to close the game and the
- * W, A, S, D keys for player movement. This fulfills a mandatory part
- * of the project.
- *
- * @param keycode The integer code of the key that was pressed.
- * @param data A pointer to the main game data struct.
- * @return int (Unused but required by MLX).
+ * This function now includes collision detection and updates the animation state
+ * (direction and is_moving flag) in addition to moving the player. This
+ * fulfills the mandatory requirement for W, A, S, D movement and ESC exit.
  */
 int	handle_keypress(int keycode, t_data *data)
 {
-	// Handle exiting the game
+	t_vector	next_pos;
+
 	if (keycode == KEY_ESC)
-	{
-		ft_printf("ESC key pressed. Exiting...\n");
-		cleanup_and_exit(data);
-	}
-
-	// Handle player movement
+		cleanup_and_exit(data, 0);
+	// Determine the potential next position based on input
+	next_pos = data->player_pos;
 	if (keycode == KEY_W)
-		data->player_pos.y -= 1;
+		next_pos.y -= 1;
 	else if (keycode == KEY_A)
-		data->player_pos.x -= 1;
+		next_pos.x -= 1;
 	else if (keycode == KEY_S)
-		data->player_pos.y += 1;
+		next_pos.y += 1;
 	else if (keycode == KEY_D)
-		data->player_pos.x += 1;
-
-	// If a movement key was pressed, print the move count to the shell
+		next_pos.x += 1;
+	// Check for collision with an impassable Fort wall ('1')
+	if (data->map.grid[next_pos.y][next_pos.x] == '1')
+		return (0); // If collision, do nothing.
+	// If move is valid, update state
 	if (keycode == KEY_W || keycode == KEY_A || keycode == KEY_S || keycode == KEY_D)
 	{
+		data->player_pos = next_pos;
+		data->is_moving = true;
+		if (keycode == KEY_W)
+			data->player_dir = UP;
+		else if (keycode == KEY_A)
+			data->player_dir = LEFT;
+		else if (keycode == KEY_S)
+			data->player_dir = DOWN;
+		else if (keycode == KEY_D)
+			data->player_dir = RIGHT;
 		data->move_count++;
 		ft_printf("Move count: %d\n", data->move_count);
 	}

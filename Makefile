@@ -6,7 +6,7 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/17 18:54:20 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/18 11:34:12 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,11 @@ SRCS            :=
 # --- Main Files ---
 vpath %.c $(SRC_DIR)
 SRCS            += main.c
+
+# --- Initialization Files ---
+vpath %.c $(SRC_DIR)/init
 SRCS            += init.c
+SRCS            += memory.c
 
 # --- Game Logic Files ---
 vpath %.c $(SRC_DIR)/game

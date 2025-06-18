@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:33:00 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 18:53:19 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/18 13:47:40 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,30 +53,24 @@ int	main(int argc, char **argv)
 		ft_putstr_fd("Error\nUsage: ./so_long maps/your_map.ber\n", 2);
 		return (1);
 	}
+	ft_printf("Checkpoint 1: Initializing data...\n");
 	init_game_data(&data);
 
-	// 2. Map Parsing
-	// This function will read the file and validate the map's geometry,
-	// content, and path. It will exit with an error if anything is wrong.
+	ft_printf("Checkpoint 2: Parsing map...\n");
 	parse_map(argv[1], &data);
 
-	// 3. Graphics & Asset Setup
-	// These functions set up the MLX connection, create the window
-	// based on the map's dimensions, and load all .xpm sprites.
+	ft_printf("Checkpoint 3: Initializing MLX...\n");
 	init_mlx(&data);
-	load_all_textures(&data);
 
-	// 4. Register Hooks
-	// Tell MLX which functions to call when specific events happen.
-	// This fulfills the mandatory requirements for closing the window
-	// and for player movement. 
+	ft_printf("Checkpoint 4: Loading all textures...\n");
+	load_all_textures(&data);
+	ft_printf("Checkpoint 5: All textures loaded. Setting up hooks...\n");
+
 	mlx_hook(data.win, 17, 0, handle_close_window, &data);
 	mlx_key_hook(data.win, handle_keypress, &data);
 	mlx_loop_hook(data.mlx, render_frame, &data);
 
-	// 5. Start Game
-	// This function starts the event loop. It will not return until
-	// the game is closed. All updates will now happen in your hook functions.
+	ft_printf("Checkpoint 6: Starting MLX loop...\n");
 	mlx_loop(data.mlx);
 	return (0);
 }

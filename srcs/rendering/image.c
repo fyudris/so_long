@@ -6,13 +6,15 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:44:04 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 19:08:46 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/18 11:21:45 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/so_long.h"
 
-// Get the color of a single pixel from a source image buffer
+/**
+ * @brief Gets the color of a single pixel from a source image buffer.
+ */
 unsigned int	get_pixel_from_img(t_img *img, int x, int y)
 {
 	char	*pixel_address;
@@ -23,7 +25,9 @@ unsigned int	get_pixel_from_img(t_img *img, int x, int y)
 	return (*(unsigned int *)pixel_address);
 }
 
-// Puts a pixel of a given color into a destination image buffer.
+/**
+ * @brief Puts a pixel of a given color into a destination image buffer.
+ */
 void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color)
 {
 	char	*pixel_address;
@@ -33,6 +37,38 @@ void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color)
 	pixel_address = img->addr + (y * img->line_len + x * (img->bpp / 8));
 	*(unsigned int *)pixel_address = color;
 }
+
+/**
+ * @brief copies a rectangular area of pixels from a source to a destination.
+ * 
+ * This function iterates through a defined rectangle on the source spritesheet
+ * and copies each pixel to the destination image, effectively "unpacking" a
+ * single sprite.
+ * 
+ * @param dest The destination image (must be pre-allocated)
+ * @param src The source spritesheet
+ * @param pos The top-left (x,y) coordinate of the sprite on the source sheet.
+ */
+void	unpack_sprite(t_img *dest, t_img *src, t_vector pos)
+{
+	int				x;
+	int				y;
+	unsigned int	color;
+
+	y = -1;
+	while (++y < dest->height)
+	{
+		x = -1;
+		while (++x < dest->width)
+		{
+			color = get_pixel_from_img(src, pos.x + x, pos.y + y);
+			put_pixel_to_img(dest, x, y, color);
+		}
+	}
+}
+
+
+
 
 /**
  * @brief Scales a small source image onto a larger destination image.

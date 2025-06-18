@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 12:26:47 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 13:33:53 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/18 14:30:12 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,38 +46,46 @@ static void	check_walls(t_data *data)
 	}
 }
 
+/*
+ * Map Character Legend:
+ *
+ * 1: Fort (Impassable Wall)
+ * 0: Empty Space
+ * P: Player Start Position
+ * C: Key (Collectible Item)
+ * E: Door (Final Exit)
+ *
+ * --- Custom Game Objects ---
+ * D: Door Obstacle
+ * W: Wall Obstacle
+ * R: Rock Obstacle
+ * K: Key Object (Pushable)
+ *
+ * --- Custom Text Blocks ---
+ * b, y: "BABA", "YOU"
+ * d, n: "DOOR", "WIN"
+ * i:    "IS"
+ * k, w, r: "KEY", "WALL", "ROCK"
+ * o, p, s: "OPEN", "PUSH", "STOP"
+*/
+
 /**
- * @brief Checks if a character is a valid map content.
- * 
- * It checks a character against the list of all allowed characters for the 
- * game, including game objects and all pushable text blocks.
- * 
- * | Character | so_long Component | Your Game's Object                |
- * |-----------|-------------------|-----------------------------------|
- * | 1         | Wall              | Fort (Enclosing Wall)             |
- * | 0         | Empty Space       | Empty Space                       |
- * | P         | Player Start      | Baba                              |
- * | C         | Collectible       | Key (The Item to Collect)         |
- * | E         | Map Exit          | Door (The Final Exit)             |
- * | D         | Custom Obstacle   | Door (Obstacle)                   |
- * | W         | Custom Obstacle   | Wall (Obstacle)                   |
- * | R         | Custom Obstacle   | Rock (Obstacle)                   |
- * | K         | Custom Object     | Key (Pushable Object)             |
- * | b, y      | Static Text       | "BABA", "YOU"                     |
- * | d, n      | Static Text       | "DOOR", "WIN"                     |
- * | i         | Pushable Text     | "IS"                              |
- * | k, w, r   | Pushable Text     | "KEY", "WALL", "ROCK"             |
- * | o, p, s   | Pushable Text     | "OPEN", "PUSH", "STOP"            |
- * 
- * @return int Returns 1 if valid, 0 otherwise.
- * 
+ * @brief Checks if a character is a valid map component.
+ *
+ * This function validates a character by checking if it exists within a
+ * predefined string of all allowed characters.
+ *
+ * @param c The character to check.
+ * @return int Returns 1 if the character is valid, 0 otherwise.
  */
 static int	is_valid_char(char c)
 {
-	return (c == '0' || c == '1' || c == 'P' || c == 'C' || c == 'E' ||
-		c == 'D' || c == 'W' || c == 'R' || c == 'K' || c == 'b' ||
-		c == 'w' || c == 'k' || c == 'r' || c == 'd' || c == 's' ||
-		c == 'o' || c == 'p' || c == 'n' || c == 'y' || c == 'i');
+	const char	*valid_chars;
+
+	valid_chars = "01PCE DWRK bydnikwrosup";
+	if (ft_strchr(valid_chars, c))
+		return (1);
+	return (0);
 }
 
 /**
@@ -105,12 +113,16 @@ static void	count_components(t_data *data)
 		while (x < data->map.size.x)
 		{
 			if (!is_valid_char(data->map.grid[y][x]))
-				ft_print_error("Map contains invalid characters.");
+				ft_printf("Map contains invalid characters. %c\n", 
+					data->map.	grid[y][x]);
 			if (data->map.grid[y][x] == 'P')
 			{
 				data->map.players++;
 				data->player_pos.x = x;
 				data->player_pos.y = y;
+				// Once we have the player's start position, we replace the 'P'
+				// with an empty floor tile so we don't draw it later.
+				data->map.grid[y][x] = '0';
 			}
 			else if (data->map.grid[y][x] == 'C')
 				data->map.collectibles++;

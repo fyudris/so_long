@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 20:10:32 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/18 14:56:31 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,28 @@
 /* ----- Game Constants ----- */
 
 // # define TILE_SIZE 24
-# define ORIGINAL_TILE_SIZE 24
+# define ORIGINAL_TILE_SIZE 25
 # define SCALE_FACTOR 3
 # define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR) // e.g., 48
 # define ANIMATION_FRAMES 4 // 4 frames per direction 
-# define ANIMATION_SPEED 100 // higher number = slower animation
+# define BABA_WALK_FRAMES 12
+# define ANIMATION_SPEED 125 // higher number = slower animation
+
+/* ----- Assets Path ----- */
+# define BABA_PATH "./assets/characters/Baba.xpm"
+# define DOOR_PATH "./assets/statics/Door.xpm"
+# define KEY_PATH "./assets/statics/Key.xpm"
+# define ROCK_PATH "./assets/statics/Rock.xpm"
+# define FONT_PATH "./assets/texts/Font.xpm"
+# define IS_PATH "./assets/texts/Is-Text.xpm"
+# define LEVEL_PATH "./assets/texts/Level-Text.xpm"
+# define MOVE_PATH "./assets/texts/Move-Text.xpm"
+# define OPEN_PATH "./assets/texts/Open-Text.xpm"
+# define PUSH_PATH "./assets/texts/Push-Text.xpm"
+# define WIN_PATH "./assets/texts/Win-Text.xpm"
+# define YOU_PATH "./assets/texts/You-Text.xpm"
+# define FORT_PATH "./assets/tiles/Fort.xpm"
+# define WALL_PATH "./assets/tiles/Wall.xpm"
 
 /* ----- Keycodes for Linux X11 ----- */
 
@@ -88,28 +105,33 @@ typedef struct s_game_rules
 	bool	wall_is_pushable;
 }	t_game_rules;
 
+typedef struct	s_animation
+{
+	t_img	*frames;
+	int		frame_count;
+}	t_animation;
+
 // Hold game textures
 typedef struct s_textures
 {
-	// t_img	player_down[ANIM_FRAMES];
-	// t_img	player_up[ANIM_FRAMES];
-	// t_img	player_left[ANIM_FRAMES];
-	// t_img	player_right[ANIM_FRAMES];
-	t_img	player;
-	t_img	player_txt;
-	t_img	wall;
-	t_img	wall_txt;
-	t_img	fort_wall;
-	t_img	fort_wall_txt;
-	t_img	key;
-	t_img	key_txt;
-	t_img	door;
-	t_img	door_txt;
-	t_img	you_txt;
-	t_img	open_txt;
-	t_img	push_txt;
-	t_img	win_txt;
-	t_img	is_txt;
+	t_animation	player_down;
+	t_animation	player_up;
+	t_animation	player_left;
+	t_animation	player_right;
+	t_animation	player_txt;
+	t_animation	wall;
+	t_animation	wall_txt;
+	t_animation	fort_wall;
+	// t_animation	fort_wall_txt;
+	t_animation	key;
+	t_animation	key_txt;
+	t_animation	door;
+	t_animation	door_txt;
+	t_animation	you_txt;
+	t_animation	open_txt;
+	t_animation	push_txt;
+	t_animation	win_txt;
+	t_animation	is_txt;
 }	t_textures;
 
 // Main game data struct, passed to all function
@@ -119,14 +141,14 @@ typedef struct s_data
 	void			*win;
 	t_map			map;
 	t_vector		player_pos;
-	t_direction		player_dir;
-	int				anim_fram;
-	int				anim_timer;
-	bool			is_moving;
 	int				move_count;
-	bool			keys_collected;
+	bool			player_has_key;
 	t_game_rules	rules;
 	t_textures		textures;
+	t_direction		player_dir;
+	int				anim_frame;
+	int				anim_timer;
+	bool			is_moving;
 }	t_data;
 
 /* ----- Function Prototypes ----- */
@@ -146,13 +168,21 @@ void	validate_path(t_data *data);
 
 // Rendering
 unsigned int	get_pixel_from_img(t_img *img, int x, int y);
-void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
-int	render_frame(t_data *data);
-void	load_all_textures(t_data *data);
-void	upscale_sprite(t_img *dest, t_img *src);
+void			put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
+void			upscale_sprite(t_img *dest, t_img *src);
+int				render_frame(t_data *data);
+void			load_all_textures(t_data *data);
+// void			load_animation(t_data *data, t_animation *anim, char *path,
+// 				int frame_count, t_vector start_pos);
+void	unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 
 // Game
 int	handle_close_window(t_data *data);
+int	handle_keyrelease(int keycode, t_data *data);
 int	handle_keypress(int keycode, t_data *data);
+
+
+// Memory
+void	cleanup_and_exit(t_data *data, int status);
 
 #endif

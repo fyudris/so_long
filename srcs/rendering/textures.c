@@ -6,54 +6,52 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 19:43:09 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/18 15:00:35 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/so_long.h"
 
 /**
- * @brief copies a rectangular area of pixels from a source to a destination.
- * 
- * This function iterates through a defined rectangle on the source spritesheet
- * and copies each pixel to the destination image, effectively "unpacking" a
- * single sprite.
- * 
- * @param dest The destination image (must be pre-allocated)
- * @param src The source spritesheet
- * @param pos The top-left (x,y) coordinate of the sprite on the source sheet.
+ * @brief A helper that now unpacks AND upscales a single frame.
  */
-static void	unpack_sprite(t_img *dest, t_img *src, t_vector pos)
+static void	process_one_frame(t_data *data, t_img *final_img, t_img *sheet,
+		t_vector pos)
 {
-	int				x;
-	int				y;
-	unsigned int	color;
+	t_img	small_sprite;
 
-	y = 0;
-	while (y < dest->height)
-	{
-		x = 0;
-		while (x < dest->width)
-		{
-			// Get the color from the source sheet at an offset
-			color = get_pixel_from_img(src, pos.x + x, pos.y + y);
-			// Put that color into the destination image at the correct spot
-			put_pixel_to_img(dest, x, y, color);
-			x++;
-		}
-		y++;
-	}
+	// 1. Create temporary small canvas for the original sprite
+	small_sprite.ptr = mlx_new_image(data->mlx,
+			ORIGINAL_TILE_SIZE, ORIGINAL_TILE_SIZE);
+	small_sprite.width = ORIGINAL_TILE_SIZE;
+	small_sprite.height = ORIGINAL_TILE_SIZE;
+	small_sprite.addr = mlx_get_data_addr(small_sprite.ptr, &small_sprite.bpp,
+			&small_sprite.line_len, &small_sprite.endian);
+
+	// 2. Unpack the sprite from the sheet onto the small canvas
+	unpack_sprite(&small_sprite, sheet, pos);
+
+	// 3. Create the final, larger canvas
+	final_img->ptr = mlx_new_image(data->mlx, TILE_SIZE, TILE_SIZE);
+	final_img->width = TILE_SIZE;
+	final_img->height = TILE_SIZE;
+	final_img->addr = mlx_get_data_addr(final_img->ptr, &final_img->bpp,
+			&final_img->line_len, &final_img->endian);
+
+	// 4. Upscale the small sprite onto the final canvas
+	upscale_sprite(final_img, &small_sprite);
+
+	// 5. Destroy the temporary small sprite canvas
+	mlx_destroy_image(data->mlx, small_sprite.ptr);
 }
 
+ 
 /**
- * @brief Loads a sprite, upscales it, and stores it.
+ * @brief The main function for loading any animation sequence from a spritesheet.
  *
- * This function now performs a multi-step process:
- * 1. Loads the entire source spritesheet.
- * 2. Unpacks the desired small sprite into a temporary image.
- * 3. Creates a new, larger destination image.
- * 4. Calls upscale_sprite to scale the small sprite onto the large one.
- * 5. Frees the temporary small sprite and the original spritesheet.
+ * This function is now flexible. It can load an animation of any length,
+ * starting at any (x,y) pixel coordinate on the sheet, and can read the
+ * frames either horizontally or vertically.
  * 
  * Imagine your spritesheet is a grid. Let's assume your TILE_SIZE is 24.
  * (x=0,y=0)   (x=24,y=0)  (x=48,y=0)
@@ -67,85 +65,141 @@ static void	unpack_sprite(t_img *dest, t_img *src, t_vector pos)
  * |           |           |           |
  * +-----------+-----------+-----------+
  * (x=0,y=24)
- * 
  *
  * @param data The main game data struct.
- * @param dest_img Pointer to the t_img where the FINAL SCALED sprite is stored.
- * @param sheet_path The path to the source .xpm spritesheet.
- * @param pos The top-left (x,y) coordinate of the sprite on the sheet.
- * 
- * @param data The main game data struct.
- * @param dest_img A pointer to the t_img struct where the final sprite will
- * be stored.
- * @param sheet_path The path tot he source .xmp spritesheet
- * @param pos The top-left (x,y) coordinate of the sprite on the sheet
+ * @param anim A pointer to the t_animation struct to populate.
+ * @param path The path to the source .xpm spritesheet.
+ * @param frame_count The number of frames in this specific animation.
+ * @param start_pos The top-left (x,y) pixel coordinate of the FIRST frame.
+ * @param orientation The layout of the frames (HORIZONTAL or VERTICAL).
  */
-static void	load_one_texture(t_data *data, t_img *dest_img, char *sheet_path,
-		t_vector pos)
+static void	load_animation(t_data *data, t_animation *anim, char *path,
+		int frame_count, t_vector start_pos)
 {
 	t_img	sheet;
-	t_img	small_sprite; // A temporary image to hold the original small sprite
+	int		i;
 
-	// Load the original spritesheet
-	sheet.ptr = mlx_xpm_file_to_image(data->mlx, sheet_path,
+	anim->frame_count = frame_count;
+	anim->frames = malloc(sizeof(t_img) * frame_count);
+	if (!anim->frames)
+		ft_print_error("Malloc failed for animation.");
+
+	// --- THIS IS THE MISSING/CORRECTED PART ---
+	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path,
 			&sheet.width, &sheet.height);
 	if (!sheet.ptr)
-		ft_print_error("Failed to load spritesheet.");
+		ft_printf("Failed to load spritesheet: %s", path);
 	sheet.addr = mlx_get_data_addr(sheet.ptr, &sheet.bpp,
 			&sheet.line_len, &sheet.endian);
+	// --- END OF FIX ---
 
-	//Create a temporary small sprite canvas and unpack
-	small_sprite.ptr = mlx_new_image(data->mlx, 24, 24); // Your original TILE_SIZE
-	small_sprite.addr = mlx_get_data_addr(small_sprite.ptr, &small_sprite.bpp,
-			&small_sprite.line_len, &small_sprite.endian);
-	small_sprite.width = 24;
-	small_sprite.height = 24;
-	unpack_sprite(&small_sprite, &sheet, pos);
-
-	//Create the final, larger destination image
-	dest_img->ptr = mlx_new_image(data->mlx, 24 * SCALE_FACTOR, 24 * SCALE_FACTOR);
-	dest_img->addr = mlx_get_data_addr(dest_img->ptr, &dest_img->bpp,
-			&dest_img->line_len, &dest_img->endian);
-	dest_img->width = 24 * SCALE_FACTOR;
-	dest_img->height = 24 * SCALE_FACTOR;
-
-	//Scale the small sprite onto the large one
-	upscale_sprite(dest_img, &small_sprite);
-
-	//Cleanup
+	i = -1;
+	while (++i < frame_count)
+	{
+		// This now correctly assumes a vertical strip starting at start_pos
+		process_one_frame(data, &anim->frames[i], &sheet,
+			(t_vector){start_pos.x, start_pos.y + (i * ORIGINAL_TILE_SIZE)});
+	}
 	mlx_destroy_image(data->mlx, sheet.ptr);
-	mlx_destroy_image(data->mlx, small_sprite.ptr);
 }
 
 /**
- * @brief Loads all game textures by unpacking them from their spritesheets.
+ * @brief A specialized function to load Baba's complex 12-frame animations.
  *
- * This function calls the load_one_texture helper for every single sprite
- * needed in the game, providing the correct path and coordinates on the
- * spritesheet for each one.
+ * This function iterates through the 3 rows and 4 columns that make up
+ * a single walking direction for Baba.
  *
- * @param data A pointer to the main game data struct.
+ * @param start_col The starting column index for this animation (e.g., 0 for right, 4 for left).
+ */
+static void	load_baba_animation(t_data *data, t_animation *anim,
+		char *path, int start_col)
+{
+	t_img	sheet;
+	int		pose;
+	int		row;
+
+	anim->frame_count = BABA_WALK_FRAMES;
+	anim->frames = malloc(sizeof(t_img) * BABA_WALK_FRAMES);
+	if (!anim->frames)
+		ft_print_error("Malloc failed for Baba animation.");
+	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path,
+			&sheet.width, &sheet.height);
+	if (!sheet.ptr)
+		ft_print_error("Failed to load Baba spritesheet.");
+	sheet.addr = mlx_get_data_addr(sheet.ptr, &sheet.bpp,
+			&sheet.line_len, &sheet.endian);
+	row = -1;
+	while (++row < 3)
+	{
+		pose = -1;
+		while (++pose < 4)
+		{
+			process_one_frame(data, &anim->frames[(row * 4) + pose], &sheet,
+				(t_vector){(start_col + pose) * ORIGINAL_TILE_SIZE,
+				row * ORIGINAL_TILE_SIZE});
+		}
+	}
+	mlx_destroy_image(data->mlx, sheet.ptr);
+}
+
+/**
+ * @brief The main public function to load all visual assets for the game.
+ * It calls specialized helpers for different types of spritesheets.
+ * 
+ * Column Index		Pixel Start (x)		Content
+ * 0				0					BABA Text
+ * 1 - 4			25, 50, 75, 100		Walk Right Animation (4 frames)
+ * 5 - 8			125, 150, ...		Walk Left Animation (4 frames)
+ * 9 - 12			225, ...			Walk Up Animation (4 frames)
+ * 13 - 16			325, ...			Walk Down Animation (4 frames)
+ * 
+ * Indexing
+ * Column		Coordinate	
+ * 0			x = 0
+ * 1			x = 25
+ * 2			x = 50
+ * 3			x = 75
+ * 4			x = 100
+ * 
  */
 void	load_all_textures(t_data *data)
 {
-	// NOTE: You will need to open your .xpm files in an image editor
-	// to find the exact top-left pixel coordinates for each sprite.
-	// The values here are examples.
-
-	// Load just the top-left sprite from Baba.xpm to be our static player image.
-	load_one_texture(data, &data->textures.player,
-		"./assets/characters/Baba.xpm", (t_vector){24, 0});
-
-	// // Load all your other static textures as planned.
-	// // You will need to find the correct coordinates for these.
-	load_one_texture(data, &data->textures.fort_wall,
-		"./assets/tiles/Fort.xpm", (t_vector){0, 0});
-	// load_one_texture(data, &data->textures.wall_obj,
-	// 	"assets/tiles/Wall.xpm", (t_vector){0, 0});
-	// load_one_texture(data, &data->textures.key_item,
-	// 	"assets/statics/Key.xpm", (t_vector){0, 0});
-	// load_one_texture(data, &data->textures.exit_door,
-	// 	"assets/statics/Door.xpm", (t_vector){96, 0});
-	// load_one_texture(data, &data->textures.is_txt,
-	// 	"assets/texts/Is-Text.xpm", (t_vector){0, 0});
+	// Walk Right starts at column index 1
+	load_baba_animation(data, &data->textures.player_right, BABA_PATH, 1);
+	// Walk Left starts at column index 5
+	load_baba_animation(data, &data->textures.player_up, BABA_PATH, 5);
+	// Walk Up starts at column index 9
+	load_baba_animation(data, &data->textures.player_left, BABA_PATH, 9);
+	// Walk Down starts at column index 13
+	load_baba_animation(data, &data->textures.player_down, BABA_PATH, 13);
+	load_animation(data, &data->textures.player_txt, BABA_PATH, 3, 
+		(t_vector){0,0});
+	// --- Load other assets from their sheets ---
+	// Let's assume Door.xpm has "DOOR" text in column 0 (x=0)
+	// and the actual Door object in column 2 (x=48, assuming 24px tiles).
+	// Both are vertical animations with 3 frames.
+	load_animation(data, &data->textures.wall, WALL_PATH, 3,
+		(t_vector){50,0});
+	load_animation(data, &data->textures.wall_txt, WALL_PATH, 3,
+		(t_vector){25,0});
+	load_animation(data, &data->textures.fort_wall, FORT_PATH, 3,
+		(t_vector){50,0});
+	load_animation(data, &data->textures.key, KEY_PATH, 3,
+		(t_vector){100,0});
+	load_animation(data, &data->textures.key_txt, KEY_PATH, 3,
+		(t_vector){75,0});
+	load_animation(data, &data->textures.door, DOOR_PATH, 3, 
+		(t_vector){100,0});
+	load_animation(data, &data->textures.door_txt, DOOR_PATH, 3, 
+		(t_vector){75, 0});
+	load_animation(data, &data->textures.you_txt, YOU_PATH, 3,
+		(t_vector){50,0});
+	load_animation(data, &data->textures.is_txt, IS_PATH, 3,
+		(t_vector){0,0});
+	load_animation(data, &data->textures.open_txt, OPEN_PATH, 3,
+		(t_vector){50,0});
+	load_animation(data, &data->textures.push_txt, PUSH_PATH, 3,
+		(t_vector){50,0});
+	load_animation(data, &data->textures.win_txt, WIN_PATH, 3,
+		(t_vector){25,0});
 }
