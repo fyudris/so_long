@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/18 14:56:31 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 14:54:36 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,6 @@ typedef struct s_textures
 	t_animation	wall;
 	t_animation	wall_txt;
 	t_animation	fort_wall;
-	// t_animation	fort_wall_txt;
 	t_animation	key;
 	t_animation	key_txt;
 	t_animation	door;
@@ -139,6 +138,7 @@ typedef struct s_data
 {
 	void			*mlx;
 	void			*win;
+	t_img			background;
 	t_map			map;
 	t_vector		player_pos;
 	int				move_count;
@@ -172,9 +172,8 @@ void			put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
 void			upscale_sprite(t_img *dest, t_img *src);
 int				render_frame(t_data *data);
 void			load_all_textures(t_data *data);
-// void			load_animation(t_data *data, t_animation *anim, char *path,
-// 				int frame_count, t_vector start_pos);
 void	unpack_sprite(t_img *dest, t_img *src, t_vector pos);
+void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
 
 // Game
 int	handle_close_window(t_data *data);

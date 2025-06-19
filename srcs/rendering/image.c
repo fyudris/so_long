@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:44:04 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/18 11:21:45 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 14:36:59 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,9 +67,6 @@ void	unpack_sprite(t_img *dest, t_img *src, t_vector pos)
 	}
 }
 
-
-
-
 /**
  * @brief Scales a small source image onto a larger destination image.
  *
@@ -102,6 +99,42 @@ void	upscale_sprite(t_img *dest, t_img *src)
 			int src_y = (y * scale_y_ratio) >> 16;
 			// Copy the color
 			put_pixel_to_img(dest, x, y, get_pixel_from_img(src, src_x, src_y));
+			x++;
+		}
+		y++;
+	}
+}
+
+/**
+ * @brief Draws a small sprite image onto a larger image buffer at a specific coordinate.
+ *
+ * This function is the core of our pre-rendering system. It "stamps" a texture
+ * like a wall or floor tile onto the correct position on the background image.
+ *
+ * @param buffer The large destination image (e.g., the background).
+ * @param sprite The small source image (e.g., a single tile texture).
+ * @param pos The top-left (x,y) pixel coordinate on the buffer to draw at.
+ */
+void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos)
+{
+	int				x;
+	int				y;
+	unsigned int	color;
+
+	y = 0;
+	while (y < sprite->height)
+	{
+		x = 0;
+		while (x < sprite->width)
+		{
+			// Get the color from the small sprite image
+			color = get_pixel_from_img(sprite, x, y);
+			// Don't draw transparent pixels, to allow for layering.
+			if (color != 0x000000) // Assumes black is transparency
+			{
+				// Put that color onto the large buffer at an offset
+				put_pixel_to_img(buffer, pos.x + x, pos.y + y, color);
+			}
 			x++;
 		}
 		y++;
