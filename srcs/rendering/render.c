@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 14:58:31 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 17:50:13 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,34 +93,37 @@ static t_animation	*get_tile_animation(t_data *data, char tile_type)
 {
 	if (tile_type == '1')
 		return (&data->textures.fort_wall);
-	else if (tile_type == 'C')
+	if (tile_type == 'C')
 		return (&data->textures.key);
-	else if (tile_type == 'E')
-		return (&data->textures.door); // Final Exit Door
-	else if (tile_type == 'W')
+	if (tile_type == 'c')
+		return (&data->textures.key_txt);
+	if (tile_type == 'E')
+		return (&data->textures.door);
+	if (tile_type == 'e')
+		return (&data->textures.door_txt);
+	if (tile_type == 'W')
 		return (&data->textures.wall);
+	if (tile_type == 'w')
+		return (&data->textures.wall_txt);
+	if (tile_type == 'R')
+		return (&data->textures.rock);
+	if (tile_type == 'r')
+		return (&data->textures.rock_txt); 
 	// --- Add cases for your other game objects ---
 	
 	// --- Text Blocks ---
-	else if (tile_type == 'b') // 'b' for "BABA" text
+	if (tile_type == 'p') // 'b' for "BABA" text
 		return (&data->textures.player_txt);
-	else if (tile_type == 'y')
+	if (tile_type == 'y')
 		return (&data->textures.you_txt);
-	else if (tile_type == 'd')
-		return (&data->textures.door_txt);
-	else if (tile_type == 'n')
+	if (tile_type == 'n')
 		return (&data->textures.win_txt);
-	else if (tile_type == 'k') // 'k' for "KEY" text
-		return (&data->textures.key_txt);
-	else if (tile_type == 'w')
-		return (&data->textures.wall_txt);  
-	else if (tile_type == 'o')
+	if (tile_type == 'o')
 		return (&data->textures.open_txt);
-	else if (tile_type == 'u') // Use 'u' for "PUSH" text
+	if (tile_type == 'u') // Use 'u' for "PUSH" text
 		return (&data->textures.push_txt);
-	else if (tile_type == 'i')
+	if (tile_type == 'i')
 		return (&data->textures.is_txt);
-
 	// For '0' (empty space) and 'P' (player start), we return NULL
 	// so the background shows through.
 	return (NULL);

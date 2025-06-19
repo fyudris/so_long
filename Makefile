@@ -6,7 +6,7 @@
 #    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/18 11:34:12 by fyudris          ###   ########.fr        #
+#    Updated: 2025/06/19 15:28:53 by fyudris          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,7 +46,7 @@ SRCS            += memory.c
 # --- Game Logic Files ---
 vpath %.c $(SRC_DIR)/game
 SRCS            += hooks.c
-# SRCS            += logic.c
+SRCS            += logic.c
 
 # --- Parsing Files ---
 vpath %.c $(SRC_DIR)/parsing

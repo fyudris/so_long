@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 20:45:29 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 15:07:47 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 15:19:10 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,8 @@ void	cleanup_and_exit(t_data *data, int status)
 	free_animation(data, &data->textures.key_txt);
 	free_animation(data, &data->textures.door);
 	free_animation(data, &data->textures.door_txt);
+	free_animation(data, &data->textures.rock);
+	free_animation(data, &data->textures.rock_txt);
 	free_animation(data, &data->textures.you_txt);
 	free_animation(data, &data->textures.open_txt);
 	free_animation(data, &data->textures.push_txt);

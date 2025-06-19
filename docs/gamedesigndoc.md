@@ -2,22 +2,25 @@
 
 
 ### Legends
-| Character | so_long Component | Your Game's Object                |
-|-----------|-------------------|-----------------------------------|
-| 1         | Wall              | Fort (Enclosing Wall)             |
-| 0         | Empty Space       | Empty Space                       |
-| P         | Player Start      | Baba                              |
-| C         | Collectible       | Key (The Item to Collect)         |
-| E         | Map Exit          | Door (The Final Exit)             |
-| D         | Custom Obstacle   | Door (Obstacle)                   |
-| W         | Custom Obstacle   | Wall (Obstacle)                   |
-| R         | Custom Obstacle   | Rock (Obstacle)                   |
-| K         | Custom Object     | Key (Pushable Object)             |
-| b, y      | Static Text       | "BABA", "YOU"                     |
-| d, n      | Static Text       | "DOOR", "WIN"                     |
-| i         | Pushable Text     | "IS"                              |
-| k, w, r   | Pushable Text     | "KEY", "WALL", "ROCK"             |
-| o, p, s   | Pushable Text     | "OPEN", "PUSH", "STOP"            |
+| Character | so_long Component | Your Game's Object | Description                                               |
+|-----------|-------------------|--------------------|-----------------------------------------------------------|
+| 1         | Wall              | Fort               | The mandatory, unpenetrable enclosing wall.              |
+| 0         | Empty Space       | Empty Space        | A walkable tile.                                         |
+| P         | Player Start      | Baba               | The player's starting position.                          |
+| p         | Text Block        | "BABA" Text        | Pushable text block. Can be static (in a rule box).      |
+| C         | Collectible       | Key (The Item)     | The mandatory item that must be collected to enable the exit. |
+| c         | Text Block        | "KEY" Text         | Pushable text block.                                     |
+| E         | Custom Obstacle   | Door (Obstacle/The Exit)    | A temporary barrier that can be opened by a rule. The final tile to step on to win the game.         |
+| e         | Text Block        | "DOOR" Text        | Pushable text block. Can be static or part of a puzzle.  |
+| W         | Custom Obstacle   | Wall (Obstacle)    | An interactive obstacle whose properties can be changed. |
+| w         | Text Block        | "WALL" Text        | Pushable text block.                                     |
+| R         | Custom Obstacle   | Rock (Obstacle)    | An interactive obstacle.                                 |
+| r         | Text Block        | "ROCK" Text        | Pushable text block.                                     |
+| y         | Text Block        | "YOU" Text         | Pushable text block. Can be static.                      |
+| n         | Text Block        | "WIN" Text         | Pushable text block. Can be static.                      |
+| i         | Text Block        | "IS" Text          | Pushable text block.                                     |
+| o         | Text Block        | "OPEN" Text        | Pushable text block.                                     |
+| u         | Text Block        | "PUSH" Text        | Pushable text block.                                     |
 
 Frame-Rate Dependent Animation
 The Workload: Your current render_frame function uses a loop to draw every single tile of the map, one by one, in every single frame.

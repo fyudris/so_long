@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:33:00 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/18 13:47:40 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 16:05:06 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ int	main(int argc, char **argv)
 	mlx_hook(data.win, 17, 0, handle_close_window, &data);
 	mlx_key_hook(data.win, handle_keypress, &data);
 	mlx_loop_hook(data.mlx, render_frame, &data);
+
 
 	ft_printf("Checkpoint 6: Starting MLX loop...\n");
 	mlx_loop(data.mlx);

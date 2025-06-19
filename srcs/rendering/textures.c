@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/18 15:00:35 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 15:21:25 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,6 +191,10 @@ void	load_all_textures(t_data *data)
 	load_animation(data, &data->textures.door, DOOR_PATH, 3, 
 		(t_vector){100,0});
 	load_animation(data, &data->textures.door_txt, DOOR_PATH, 3, 
+		(t_vector){75, 0});
+	load_animation(data, &data->textures.rock, ROCK_PATH, 3, 
+		(t_vector){100,0});
+	load_animation(data, &data->textures.rock_txt, ROCK_PATH, 3, 
 		(t_vector){75, 0});
 	load_animation(data, &data->textures.you_txt, YOU_PATH, 3,
 		(t_vector){50,0});

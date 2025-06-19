@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 14:54:36 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 18:12:55 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@
 # define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR) // e.g., 48
 # define ANIMATION_FRAMES 4 // 4 frames per direction 
 # define BABA_WALK_FRAMES 12
-# define ANIMATION_SPEED 125 // higher number = slower animation
+# define ANIMATION_SPEED 200 // higher number = slower animation
 
 /* ----- Assets Path ----- */
 # define BABA_PATH "./assets/characters/Baba.xpm"
@@ -126,6 +126,8 @@ typedef struct s_textures
 	t_animation	key_txt;
 	t_animation	door;
 	t_animation	door_txt;
+	t_animation	rock;
+	t_animation	rock_txt;
 	t_animation	you_txt;
 	t_animation	open_txt;
 	t_animation	push_txt;
@@ -143,6 +145,7 @@ typedef struct s_data
 	t_vector		player_pos;
 	int				move_count;
 	bool			player_has_key;
+	int				keys_collected;
 	t_game_rules	rules;
 	t_textures		textures;
 	t_direction		player_dir;
@@ -175,13 +178,12 @@ void			load_all_textures(t_data *data);
 void	unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
 
+// Memory
+void	cleanup_and_exit(t_data *data, int status);
+
 // Game
 int	handle_close_window(t_data *data);
 int	handle_keyrelease(int keycode, t_data *data);
 int	handle_keypress(int keycode, t_data *data);
-
-
-// Memory
-void	cleanup_and_exit(t_data *data, int status);
-
+bool	handle_push(t_data *data, t_vector obj_pos);
 #endif

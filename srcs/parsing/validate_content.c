@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 12:26:47 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/18 14:30:12 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/19 17:47:24 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,7 @@ static void	check_walls(t_data *data)
 static int	is_valid_char(char c)
 {
 	const char	*valid_chars;
-
-	valid_chars = "01PCE DWRK bydnikwrosup";
+	valid_chars = "01PCEWRpceuwryniso";
 	if (ft_strchr(valid_chars, c))
 		return (1);
 	return (0);
