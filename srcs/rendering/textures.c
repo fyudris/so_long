@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 08:38:16 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 12:35:25 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,6 +143,26 @@ static void	load_baba_animation(t_data *data, t_animation *anim,
 }
 
 /**
+ * @brief Manually define the coordinates for each digit on the spritesheet.
+ * This function acts as a hardcoded map for our irregular font sheet.
+ */
+static void	init_digit_coords(t_data *data)
+{
+	// You must find these exact coordinates using GIMP. These are examples.
+	// The index corresponds to the digit (e.g., index 0 is for digit '0').
+	data->textures.digit_coords[0] = (t_vector){250, 225}; // Coords for '0'
+	data->textures.digit_coords[1] = (t_vector){300, 225}; // Coords for '1'
+	data->textures.digit_coords[2] = (t_vector){0, 300};   // Coords for '2'
+	data->textures.digit_coords[3] = (t_vector){50, 300};  // Coords for '3'
+	data->textures.digit_coords[4] = (t_vector){100, 300};  // Coords for '4'
+	data->textures.digit_coords[5] = (t_vector){150, 300};  // Coords for '5'
+	data->textures.digit_coords[6] = (t_vector){200, 300}; // Coords for '6'
+	data->textures.digit_coords[7] = (t_vector){250, 300}; // Coords for '7'
+	data->textures.digit_coords[8] = (t_vector){300, 300}; // Coords for '8'
+	data->textures.digit_coords[9] = (t_vector){0, 375};   // Coords for '9'
+}
+
+/**
  * @brief The main public function to load all visual assets for the game.
  * It calls specialized helpers for different types of spritesheets.
  * 
@@ -164,6 +184,7 @@ static void	load_baba_animation(t_data *data, t_animation *anim,
  */
 void	load_all_textures(t_data *data)
 {
+	int	i;
 	
 	// Walk Right starts at column index 1
 	load_baba_animation(data, &data->textures.player_right, BABA_PATH, 1);
@@ -205,30 +226,18 @@ void	load_all_textures(t_data *data)
 		(t_vector){25,0});
 	
 	ft_printf("Loading UI textures...\n");
-	load_animation(data, &data->textures.ui_key_icon, KEY_PATH, 
-		3, (t_vector){25, 0});
-	load_animation(data, &data->textures.ui_x_icon, FONT_PATH, 
-		3, (t_vector){100, 225});
-	
-	// Load digits 0-9 are in a horizontal row on the sheet
-	load_animation(data, &data->textures.ui_digits[0], FONT_PATH, 3,
-		(t_vector){250, 225});
-	load_animation(data, &data->textures.ui_digits[1], FONT_PATH, 3,
-		(t_vector){300, 225});
-	load_animation(data, &data->textures.ui_digits[2], FONT_PATH, 3,
-		(t_vector){0, 300});
-	load_animation(data, &data->textures.ui_digits[3], FONT_PATH, 3,
-		(t_vector){50, 300});
-	load_animation(data, &data->textures.ui_digits[4], FONT_PATH, 3,
-		(t_vector){100, 300});
-	load_animation(data, &data->textures.ui_digits[5], FONT_PATH, 3,
-		(t_vector){150, 300});
-	load_animation(data, &data->textures.ui_digits[6], FONT_PATH, 3,
-		(t_vector){200, 300});
-	load_animation(data, &data->textures.ui_digits[7], FONT_PATH, 3,
-		(t_vector){250, 300});
-	load_animation(data, &data->textures.ui_digits[8], FONT_PATH, 3,
-		(t_vector){300, 300});
-	load_animation(data, &data->textures.ui_digits[9], FONT_PATH, 3,
-		(t_vector){0, 375});
+	init_digit_coords(data);
+	i = 0;
+	while (i < 10)
+	{
+		load_animation(data, &data->textures.ui_digits[i], FONT_PATH,
+			3, data->textures.digit_coords[i]);
+		i++;
+	}
+	load_animation(data, &data->textures.ui_key_icon, KEY_PATH,
+		3, (t_vector){25, 0}); // Example coordinate
+
+	load_animation(data, &data->textures.ui_x_icon, FONT_PATH,
+		3, (t_vector){100, 225}); // Example coordinate
+
 }

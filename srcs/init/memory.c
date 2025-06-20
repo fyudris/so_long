@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 20:45:29 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 15:19:10 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 12:29:46 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,20 +46,20 @@ static void	free_map_grid(t_map *map)
 {
 	int	i;
 
-	if (!map->grid)
+	if (!map || !map->grid)
 		return ;
 	i = 0;
 	while (i < map->size.y)
 	{
-		// Free each individual line (string)
 		if (map->grid[i])
 			free(map->grid[i]);
 		i++;
 	}
-	// Free the array of pointers
 	free(map->grid);
 	map->grid = NULL;
 }
+
+
 
 /**
  * @brief The centralized cleanup function to free all allocated memory.
