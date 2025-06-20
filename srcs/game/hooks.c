@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:10:08 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 17:56:41 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/21 01:01:08 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,18 @@ int	handle_close_window(t_data *data)
 	return (0);
 }
 
-static bool	is_pushable(char tile)
-{
-	// Define all characters that the player can push     
-	if (ft_strchr("WRcuwryniso", tile)) // Before: "pkeuryniswos"
+/**
+ * @brief Helper to check if a tile represents a pushable object.
+ * This now checks the rules struct for objects like walls.
+ */
+static bool	is_pushable(t_data *data, char tile)
+{// Text blocks are always pushable.
+	if (ft_strchr("pcewrynisuo", tile))
+		return (true);
+	// Game objects are only pushable if the rule is active.
+	if (tile == 'W' && data->rules.wall_is_pushable == true)
+		return (true);
+	if (tile == 'R' && data->rules.rock_is_pushable == true)
 		return (true);
 	return (false);
 }
@@ -52,21 +60,15 @@ int	handle_keyrelease(int keycode, t_data *data)
 }
 
 /**
- * @brief Handles all keyboard PRESS events.
+ * @brief Handles all keyboard PRESS events with the final, robust logic.
  *
- * This function has been re-ordered to first update the player's intended
- * direction, and then use that direction to correctly resolve collisions
- * and push mechanics.
- */
-/**
- * @brief Handles all keyboard PRESS events with the correct order of operations.
- */
-/**
- * @brief Handles all keyboard PRESS events with a robust, correctly-ordered logic.
+ * This function is ordered to prevent common state bugs. It updates the
+ * player's intended direction first, then checks for all blocking conditions
+ * (walls, locked objects, failed pushes) before committing to a move.
  *
- * This function ensures that movement is only blocked if a specific, invalid
- * condition is met (hitting a wall, a locked exit, or a failed push).
- * A move into an empty '0' tile will always succeed.
+ * @param keycode The integer code of the key that was pressed.
+ * @param data A pointer to the main game data struct.
+ * @return int Always returns 0.
  */
 int	handle_keypress(int keycode, t_data *data)
 {
@@ -77,8 +79,7 @@ int	handle_keypress(int keycode, t_data *data)
 		cleanup_and_exit(data, 0);
 	if (keycode != KEY_W && keycode != KEY_A && keycode != KEY_S && keycode != KEY_D)
 		return (0);
-
-	// 1. Set player's intended direction immediately. This is crucial.
+	// 1. Set player's intended direction and state immediately.
 	data->is_moving = true;
 	if (keycode == KEY_W)
 		data->player_dir = UP;
@@ -88,8 +89,7 @@ int	handle_keypress(int keycode, t_data *data)
 		data->player_dir = DOWN;
 	else if (keycode == KEY_D)
 		data->player_dir = RIGHT;
-	
-	// 2. Calculate the potential destination tile
+	// 2. Calculate the destination tile based on the NEW direction.
 	next_pos = data->player_pos;
 	if (data->player_dir == UP)
 		next_pos.y -= 1;
@@ -99,31 +99,50 @@ int	handle_keypress(int keycode, t_data *data)
 		next_pos.x -= 1;
 	else if (data->player_dir == RIGHT)
 		next_pos.x += 1;
-
-	// 3. Check for blocking conditions.
+	// 3. Handle all interactions and blocking conditions.
 	next_tile = data->map.grid[next_pos.y][next_pos.x];
-	if (next_tile == '1') // Condition A: Is it an impassable Fort wall?
-		return (0);
-	else if (next_tile == 'E' && data->keys_collected < data->map.collectibles) // Condition B: Is it a locked Exit?
-		return (0);
-	else if (is_pushable(next_tile)) // Condition C: Is it a pushable object?
-	{
-		if (!handle_push(data, next_pos)) // Try to push it.
-			return (0); // If the push fails, block the move.
-	}
 	
-	// 4. If NONE of the blocking conditions were met, the move is valid.
-	// This includes moving into an empty '0' or onto a collectible 'C'.
+	// --- Blocking Conditions ---
+	if (next_tile == '1')
+		return (0); // Blocked by Fort wall
+	if ((next_tile == 'W' && !data->rules.wall_is_pushable))
+		return (0); // Blocked by a solid Wall object
+	if ((next_tile == 'R' && !data->rules.rock_is_pushable))
+		return (0); // Blocked by a solid Rock object
+	if (is_pushable(data, next_tile))
+	{
+		if (!handle_push(data, next_pos)) // If a push fails, block the move.
+			return (0);
+	}
+
+	// --- Win Condition Check (The Triple Lock) ---
+	if (next_tile == 'E')
+	{
+		// Check for ALL THREE conditions to win
+		if (data->keys_collected >= data->map.collectibles
+			&& data->rules.key_is_activated == true)
+		{
+			ft_printf("YOU WIN! Final moves: %d\n", data->move_count + 1);
+			cleanup_and_exit(data, 0);
+		}
+		// If any condition is false, the Exit is just a solid wall.
+		return (0);
+	}
+
+	// 4. Handle collecting a key (No preconditions needed).
 	if (next_tile == 'C')
 	{
-		// TODO: Implement your KEY IS OPEN logic check here.
-		// For now, let's just collect it.
 		data->keys_collected++;
-		data->map.grid[next_pos.y][next_pos.x] = '0'; // Remove the key
+		data->map.grid[next_pos.y][next_pos.x] = '0'; // Remove key from map
+		ft_printf("Key collected! Total: %d of %d\n",
+			data->keys_collected, data->map.collectibles);
 	}
-	data->player_pos = next_pos; // Update player position
+
+	// 5. If no blocking conditions were met, finalize the move.
+	data->player_pos = next_pos;
 	data->move_count++;
 	ft_printf("Move count: %d\n", data->move_count);
 	return (0);
 }
+
 

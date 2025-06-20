@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 20:52:48 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/21 00:20:20 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,7 @@ int	render_frame(t_data *data)
 		mlx_put_image_to_window(data->mlx, data->win,
 			player_anim->frames[player_anim_frame(data, player_anim)].ptr,
 			data->player_pos.x * TILE_SIZE,
-			(data->player_pos.y * TILE_SIZE) + UI_HEIGHT); // <-- ADD OFFSET
-
-	// Draw the UI on top
+			(data->player_pos.y * TILE_SIZE) + UI_HEIGHT);
 	draw_ui(data);
 	return (0);
 }

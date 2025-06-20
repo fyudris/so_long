@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 20:57:33 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 21:24:14 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,8 +122,8 @@ static void	load_baba_animation(t_data *data, t_animation *anim,
 	anim->frames = malloc(sizeof(t_img) * BABA_WALK_FRAMES);
 	if (!anim->frames)
 		ft_print_error("Malloc failed for Baba animation.");
-	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path,
-			&sheet.width, &sheet.height);
+	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path, 
+		&sheet.width, &sheet.height);
 	if (!sheet.ptr)
 		ft_print_error("Failed to load Baba spritesheet.");
 	sheet.addr = mlx_get_data_addr(sheet.ptr, &sheet.bpp,
@@ -186,13 +186,9 @@ void	load_all_textures(t_data *data)
 {
 	int	i;
 	
-	// Walk Right starts at column index 1
 	load_baba_animation(data, &data->textures.player_right, BABA_PATH, 1);
-	// Walk Left starts at column index 5
 	load_baba_animation(data, &data->textures.player_up, BABA_PATH, 5);
-	// Walk Up starts at column index 9
 	load_baba_animation(data, &data->textures.player_left, BABA_PATH, 9);
-	// Walk Down starts at column index 13
 	load_baba_animation(data, &data->textures.player_down, BABA_PATH, 13);
 	load_animation(data, &data->textures.player_txt, BABA_PATH, 3, 
 		(t_vector){0,0});
@@ -224,8 +220,6 @@ void	load_all_textures(t_data *data)
 		(t_vector){50,0});
 	load_animation(data, &data->textures.win_txt, WIN_PATH, 3,
 		(t_vector){25,0});
-	
-	ft_printf("Loading UI textures...\n");
 	init_digit_coords(data);
 	i = 0;
 	while (i < 10)

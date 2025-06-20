@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 20:58:57 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 22:20:00 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,6 +105,7 @@ typedef struct s_game_rules
 {
 	bool	key_is_activated;
 	bool	wall_is_pushable;
+	bool	rock_is_pushable;
 }	t_game_rules;
 
 typedef struct	s_animation
