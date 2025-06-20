@@ -6,16 +6,18 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 17:50:13 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 00:22:32 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/so_long.h"
 static t_animation	*get_tile_animation(t_data *data, char tile_type);
 static t_animation	*get_current_player_anim(t_data *data);
-static void			draw_tile(t_data *data, int x, int y);
+// static void			draw_tile(t_data *data, int x, int y);
 static void			draw_ui(t_data *data);
 static int	player_anim_frame(t_data *data, t_animation *player_anim);
+static void	draw_map(t_data *data);
+static void	draw_ui(t_data *data);
 
 /**
  * @brief The main rendering function, called on every frame by the loop hook.
@@ -29,8 +31,8 @@ static int	player_anim_frame(t_data *data, t_animation *player_anim);
 int	render_frame(t_data *data)
 {
 	t_animation	*player_anim;
-	int			x;
-	int			y;
+	// int			x;
+	// int			y;
 
 	// 1. Clear the entire window to black to prevent "smearing".
 	mlx_clear_window(data->mlx, data->win);
@@ -42,48 +44,105 @@ int	render_frame(t_data *data)
 		// This frame number will be used by ALL passively animated objects.
 		data->anim_frame++;
 	}
-	// 3. Draw all the map tiles by looping through the grid.
-	y = -1;
-	while (++y < data->map.size.y)
-	{
-		x = -1;
-		while (++x < data->map.size.x)
-			draw_tile(data, x, y);
-	}
-	// 4. Draw the player on top of the map.
+	draw_map(data);
+	// 4. Draw the player on top of the map with offset
 	player_anim = get_current_player_anim(data);
 	if (player_anim && player_anim->frames)
 		mlx_put_image_to_window(data->mlx, data->win,
 			player_anim->frames[player_anim_frame(data, player_anim)].ptr,
-			data->player_pos.x * TILE_SIZE, data->player_pos.y * TILE_SIZE);
-	// 5. Draw the static UI text on top of everything.
+			data->player_pos.x * TILE_SIZE,
+			(data->player_pos.y * TILE_SIZE) + UI_HEIGHT); // <-- ADD OFFSET
+
+	// Draw the UI on top
 	draw_ui(data);
 	return (0);
 }
 
 
 /**
- * @brief A helper to draw a single tile from the map grid.
- *
- * It looks up the correct animation for the tile type and uses the global
- * animation frame number to draw the correct frame for that animation.
+ * @brief Draws the entire map grid with a vertical offset for the UI bar.
  */
-static void	draw_tile(t_data *data, int x, int y)
+static void	draw_map(t_data *data)
 {
-	char		tile_type;
+	int	x;
+	int	y;
+	char	tile_type;
 	t_animation	*anim;
-	int			frame_to_draw;
+	int	frame;
 
-	tile_type = data->map.grid[y][x];
-	anim = get_tile_animation(data, tile_type);
-	// If anim is NULL (for '0' or 'P'), we draw nothing.
-	if (!anim || !anim->frames)
-		return ;
-	// Use the modulo operator to loop the animation correctly.
-	frame_to_draw = data->anim_frame % anim->frame_count;
-	mlx_put_image_to_window(data->mlx, data->win,
-		anim->frames[frame_to_draw].ptr, x * TILE_SIZE, y * TILE_SIZE);
+	y = -1;
+	while (++y < data->map.size.y)
+	{
+		x = -1;
+		while (++x < data->map.size.x)
+		{
+			tile_type = data->map.grid[y][x];
+			anim = get_tile_animation(data, tile_type);
+			if (anim && anim->frames)
+			{
+				frame = data->anim_frame % anim->frame_count;
+				mlx_put_image_to_window(data->mlx, data->win,
+					anim->frames[frame].ptr,
+					x * TILE_SIZE,
+					(y * TILE_SIZE) + UI_HEIGHT); // <-- ADD OFFSET
+			}
+		}
+	}
 }
+
+/**
+ * @brief Draws a number to the screen using loaded digit sprites.
+ */
+void	draw_number(t_data *data, int n, t_vector pos)
+{
+	char	*str;
+	int		i;
+	int		digit;
+
+	if (n == 0)
+	{
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_digits[0].frames[0].ptr, pos.x, pos.y);
+		return ;
+	}
+	str = ft_itoa(n);
+	i = 0;
+	while (str[i])
+	{
+		digit = str[i] - '0';
+		// Draw the corresponding digit sprite, moving horizontally for each new digit
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_digits[digit].frames[0].ptr,
+			pos.x + (i * TILE_SIZE), pos.y);
+		i++;
+	}
+	free(str);
+}
+
+
+
+// /**
+//  * @brief A helper to draw a single tile from the map grid.
+//  *
+//  * It looks up the correct animation for the tile type and uses the global
+//  * animation frame number to draw the correct frame for that animation.
+//  */
+// static void	draw_tile(t_data *data, int x, int y)
+// {
+// 	char		tile_type;
+// 	t_animation	*anim;
+// 	int			frame_to_draw;
+
+// 	tile_type = data->map.grid[y][x];
+// 	anim = get_tile_animation(data, tile_type);
+// 	// If anim is NULL (for '0' or 'P'), we draw nothing.
+// 	if (!anim || !anim->frames)
+// 		return ;
+// 	// Use the modulo operator to loop the animation correctly.
+// 	frame_to_draw = data->anim_frame % anim->frame_count;
+// 	mlx_put_image_to_window(data->mlx, data->win,
+// 		anim->frames[frame_to_draw].ptr, x * TILE_SIZE, y * TILE_SIZE);
+// }
 
 /**
  * @brief A helper that returns a pointer to the correct animation struct
@@ -159,24 +218,20 @@ static t_animation	*get_current_player_anim(t_data *data)
 }
 
 /**
- * @brief Draws the static UI elements like the "Rule Box".
- * The rule box text is part of the map grid, so this function is
- * for elements that are NOT part of the grid, like a key counter.
+ * @brief Draws the entire UI panel at the top of the window.
  */
 static void	draw_ui(t_data *data)
 {
-	char	*str_moves;
+	// Draw the "Key x [number]" counter
+	mlx_put_image_to_window(data->mlx, data->win,
+		data->textures.ui_key_icon.frames[0].ptr, 10, 10);
+	mlx_put_image_to_window(data->mlx, data->win,
+		data->textures.ui_x_icon.frames[0].ptr, 10 + TILE_SIZE, 10);
+	draw_number(data, data->keys_collected,
+		(t_vector){10 + (2 * TILE_SIZE), 10});
 
-	// This is now only for UI elements NOT on the map grid.
-	// The "BABA IS YOU" text in your level design is part of the map
-	// and is already drawn by the draw_tile loop.
-
-	// Example: Draw the move count in the top-left corner.
-	// This is a bonus feature from the so_long.pdf subject guide.
-	str_moves = ft_itoa(data->move_count);
-	mlx_string_put(data->mlx, data->win, 10, 20, 0xFFFFFF, "MOVES:");
-	mlx_string_put(data->mlx, data->win, 80, 20, 0xFFFFFF, str_moves);
-	free(str_moves);
-
-	// Here you would add logic to draw a Key icon if data->player_has_key is true.
+	// Draw the move counter on the right side of the UI
+	// You will need to calculate the width of the number to right-align it.
+	// This is a simplified example.
+	draw_number(data, data->move_count, (t_vector){300, 10});
 }

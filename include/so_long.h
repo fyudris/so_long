@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 18:12:55 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 08:39:40 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@
 # define ANIMATION_FRAMES 4 // 4 frames per direction 
 # define BABA_WALK_FRAMES 12
 # define ANIMATION_SPEED 200 // higher number = slower animation
+# define UI_HEIGHT 100 // The height in pixels of the top UI bar
 
 /* ----- Assets Path ----- */
 # define BABA_PATH "./assets/characters/Baba.xpm"
@@ -49,6 +50,7 @@
 # define YOU_PATH "./assets/texts/You-Text.xpm"
 # define FORT_PATH "./assets/tiles/Fort.xpm"
 # define WALL_PATH "./assets/tiles/Wall.xpm"
+# define FONT_PATH "./assets/texts/Font.xpm"
 
 /* ----- Keycodes for Linux X11 ----- */
 
@@ -133,6 +135,10 @@ typedef struct s_textures
 	t_animation	push_txt;
 	t_animation	win_txt;
 	t_animation	is_txt;
+	// --- NEW UI TEXTURES ---
+	t_animation	ui_key_icon;
+	t_animation	ui_x_icon;
+	t_animation	ui_digits[10]; // An array to hold images for numbers 0-9
 }	t_textures;
 
 // Main game data struct, passed to all function
@@ -186,4 +192,7 @@ int	handle_close_window(t_data *data);
 int	handle_keyrelease(int keycode, t_data *data);
 int	handle_keypress(int keycode, t_data *data);
 bool	handle_push(t_data *data, t_vector obj_pos);
+
+// UI
+void	draw_number(t_data *data, int n, t_vector pos);
 #endif

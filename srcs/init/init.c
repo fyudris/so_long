@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:10 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 21:13:38 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 00:16:45 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	init_mlx(t_data *data)
 	if (!data->mlx)
 		ft_print_error("Failed to initialize MiniLibX.");
 	win_width = data->map.size.x * TILE_SIZE;
-	win_height = data->map.size.y * TILE_SIZE;
+	win_height = (data->map.size.y * TILE_SIZE) + UI_HEIGHT;
 	data->win = mlx_new_window(data->mlx, win_width, win_height, "Baba Is You");
 	if (!data->win)
 		ft_print_error("Failed to create window.");

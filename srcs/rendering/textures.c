@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 15:21:25 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 08:38:16 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,6 +164,7 @@ static void	load_baba_animation(t_data *data, t_animation *anim,
  */
 void	load_all_textures(t_data *data)
 {
+	
 	// Walk Right starts at column index 1
 	load_baba_animation(data, &data->textures.player_right, BABA_PATH, 1);
 	// Walk Left starts at column index 5
@@ -174,10 +175,6 @@ void	load_all_textures(t_data *data)
 	load_baba_animation(data, &data->textures.player_down, BABA_PATH, 13);
 	load_animation(data, &data->textures.player_txt, BABA_PATH, 3, 
 		(t_vector){0,0});
-	// --- Load other assets from their sheets ---
-	// Let's assume Door.xpm has "DOOR" text in column 0 (x=0)
-	// and the actual Door object in column 2 (x=48, assuming 24px tiles).
-	// Both are vertical animations with 3 frames.
 	load_animation(data, &data->textures.wall, WALL_PATH, 3,
 		(t_vector){50,0});
 	load_animation(data, &data->textures.wall_txt, WALL_PATH, 3,
@@ -206,4 +203,32 @@ void	load_all_textures(t_data *data)
 		(t_vector){50,0});
 	load_animation(data, &data->textures.win_txt, WIN_PATH, 3,
 		(t_vector){25,0});
+	
+	ft_printf("Loading UI textures...\n");
+	load_animation(data, &data->textures.ui_key_icon, KEY_PATH, 
+		3, (t_vector){25, 0});
+	load_animation(data, &data->textures.ui_x_icon, FONT_PATH, 
+		3, (t_vector){100, 225});
+	
+	// Load digits 0-9 are in a horizontal row on the sheet
+	load_animation(data, &data->textures.ui_digits[0], FONT_PATH, 3,
+		(t_vector){250, 225});
+	load_animation(data, &data->textures.ui_digits[1], FONT_PATH, 3,
+		(t_vector){300, 225});
+	load_animation(data, &data->textures.ui_digits[2], FONT_PATH, 3,
+		(t_vector){0, 300});
+	load_animation(data, &data->textures.ui_digits[3], FONT_PATH, 3,
+		(t_vector){50, 300});
+	load_animation(data, &data->textures.ui_digits[4], FONT_PATH, 3,
+		(t_vector){100, 300});
+	load_animation(data, &data->textures.ui_digits[5], FONT_PATH, 3,
+		(t_vector){150, 300});
+	load_animation(data, &data->textures.ui_digits[6], FONT_PATH, 3,
+		(t_vector){200, 300});
+	load_animation(data, &data->textures.ui_digits[7], FONT_PATH, 3,
+		(t_vector){250, 300});
+	load_animation(data, &data->textures.ui_digits[8], FONT_PATH, 3,
+		(t_vector){300, 300});
+	load_animation(data, &data->textures.ui_digits[9], FONT_PATH, 3,
+		(t_vector){0, 375});
 }
