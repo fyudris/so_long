@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 12:33:28 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 20:52:48 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,36 +92,40 @@ static void	draw_map(t_data *data)
 
 /**
  * @brief Draws a number to the screen using loaded digit sprites.
- * It converts an integer to a string and draws the sprite for each digit.
+ * This function handles converting an integer to a string and drawing
+ * the corresponding sprite for each digit.
  */
-void	draw_number(t_data *data, int n, t_vector pos)
+static void	draw_number(t_data *data, int n, t_vector pos)
 {
-	char	*str;
+	char	*str_num;
 	int		i;
 	int		digit;
 
+	// Special case for drawing the number 0
 	if (n == 0)
 	{
-		// Draw the '0' sprite directly if the number is zero
-		mlx_put_image_to_window(data->mlx, data->win,
-			data->textures.ui_digits[0].frames[0].ptr, pos.x, pos.y);
+		if (data->textures.ui_digits[0].frames)
+			mlx_put_image_to_window(data->mlx, data->win,
+				data->textures.ui_digits[0].frames[0].ptr, pos.x, pos.y);
 		return ;
 	}
-	str = ft_itoa(n);
-	if (!str)
+	str_num = ft_itoa(n);
+	if (!str_num)
 		return ;
 	i = 0;
-	while (str[i])
+	while (str_num[i])
 	{
-		digit = str[i] - '0';
-		// Draw the corresponding digit sprite, moving horizontally for each new digit
-		mlx_put_image_to_window(data->mlx, data->win,
-			data->textures.ui_digits[digit].frames[0].ptr,
-			pos.x + (i * TILE_SIZE), pos.y);
+		digit = str_num[i] - '0';
+		// Safety check before drawing
+		if (data->textures.ui_digits[digit].frames)
+			mlx_put_image_to_window(data->mlx, data->win,
+				data->textures.ui_digits[digit].frames[0].ptr,
+				pos.x + (i * TILE_SIZE), pos.y);
 		i++;
 	}
-	free(str);
+	free(str_num);
 }
+
 
 
 
@@ -222,39 +226,44 @@ static t_animation	*get_current_player_anim(t_data *data)
 }
 
 /**
- * @brief Draws the entire UI panel at the top of the window with correct alignment.
+ * @brief Draws the entire UI panel at the top of the window.
+ * This final version uses icons for both the move and key counters and
+ * handles alignment correctly.
  */
 static void	draw_ui(t_data *data)
 {
-	char	*move_str;
 	char	*key_str;
 	int		key_counter_width;
 	int		win_width;
 
 	// --- Draw Move Counter on the LEFT ---
-	mlx_string_put(data->mlx, data->win, 20, (UI_HEIGHT / 2) + 8,
-		0xFFFFFF, "MOVES:");
-	move_str = ft_itoa(data->move_count);
-	if (move_str)
-	{
-		mlx_string_put(data->mlx, data->win, 90, (UI_HEIGHT / 2) + 8,
-			0xFFFFFF, move_str);
-		free(move_str); // Free the string after use
-	}
+	// Consists of: [MOVE icon] [x icon] [number]
+	if (data->textures.ui_move_icon.frames)
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_move_icon.frames[0].ptr, 20, 10);
+	if (data->textures.ui_x_icon.frames)
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_x_icon.frames[0].ptr, 20 + TILE_SIZE, 10);
+	draw_number(data, data->move_count,
+		(t_vector){20 + (2 * TILE_SIZE), 10});
 
 	// --- Draw Key Counter on the RIGHT ---
 	key_str = ft_itoa(data->keys_collected);
 	if (!key_str)
-		return ; // Protect against malloc failure
+		return ;
+	// Calculate total width: (key icon + x icon + num of digits)
 	key_counter_width = (TILE_SIZE * 2) + (ft_strlen(key_str) * TILE_SIZE);
 	win_width = data->map.size.x * TILE_SIZE;
-	mlx_put_image_to_window(data->mlx, data->win,
-		data->textures.ui_key_icon.frames[0].ptr,
-		win_width - key_counter_width - 20, 10);
-	mlx_put_image_to_window(data->mlx, data->win,
-		data->textures.ui_x_icon.frames[0].ptr,
-		win_width - key_counter_width - 20 + TILE_SIZE, 10);
+	if (data->textures.ui_key_icon.frames)
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_key_icon.frames[0].ptr,
+			win_width - key_counter_width - 20, 10);
+	if (data->textures.ui_x_icon.frames)
+		mlx_put_image_to_window(data->mlx, data->win,
+			data->textures.ui_x_icon.frames[0].ptr,
+			win_width - key_counter_width - 20 + TILE_SIZE, 10);
 	draw_number(data, data->keys_collected,
 		(t_vector){win_width - key_counter_width - 20 + (2 * TILE_SIZE), 10});
-	free(key_str); // Free the string after use
+	free(key_str);
 }
+

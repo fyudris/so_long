@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 12:14:15 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 20:58:57 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,11 +135,10 @@ typedef struct s_textures
 	t_animation	push_txt;
 	t_animation	win_txt;
 	t_animation	is_txt;
-	// --- NEW UI TEXTURES ---
+	t_animation	ui_move_icon;
 	t_animation	ui_key_icon;
 	t_animation	ui_x_icon;
-	t_animation	ui_digits[10]; // An array to hold images for numbers 0-9
-	// Stores the top-left COORDINATE of each digit on the Font.xpm sheet
+	t_animation	ui_digits[10];
 	t_vector	digit_coords[10]; 
 }	t_textures;
 
@@ -196,5 +195,5 @@ int	handle_keypress(int keycode, t_data *data);
 bool	handle_push(t_data *data, t_vector obj_pos);
 
 // UI
-void	draw_number(t_data *data, int n, t_vector pos);
+// void	draw_number(t_data *data, int n, t_vector pos);
 #endif

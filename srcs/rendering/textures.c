@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 12:35:25 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/20 20:57:33 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -235,9 +235,10 @@ void	load_all_textures(t_data *data)
 		i++;
 	}
 	load_animation(data, &data->textures.ui_key_icon, KEY_PATH,
-		3, (t_vector){25, 0}); // Example coordinate
-
+		3, (t_vector){100, 0});
+	load_animation(data, &data->textures.ui_move_icon, MOVE_PATH,
+		3, (t_vector){50, 0});
 	load_animation(data, &data->textures.ui_x_icon, FONT_PATH,
-		3, (t_vector){100, 225}); // Example coordinate
+		3, (t_vector){100, 225});
 
 }
