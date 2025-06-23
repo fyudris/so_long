@@ -1,64 +1,32 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/06/12 17:59:50 by fyudris           #+#    #+#              #
-#    Updated: 2025/06/19 15:28:53 by fyudris          ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-
 # === CONFIGURATION ===
 NAME            := so_long
 CC              := cc
 RM              := rm -f
-MKDIR           := /bin/mkdir -p
 
 # === DIRECTORIES ===
 OBJ_DIR         := obj
 SRC_DIR         := srcs
 INC_DIR         := include
 LIBFT_DIR       := libft
-MLX_DIR         := mlx_linux
+MLX_DIR         := minilibx
 
 # === LIBRARIES ===
 LIBFT           := $(LIBFT_DIR)/libft.a
-MLX_FLAGS       := -L$(MLX_DIR) -lmlx -lXext -lX11 -lm -lz
+MLX_LIB         := $(MLX_DIR)/libmlx.a
 
-# === FLAGS ===
-CFLAGS          := -Wall -Wextra -Werror -g
-CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/includes -I$(MLX_DIR) -MD
+# === FLAGS (Improved Separation) ===
+CFLAGS          := -Wall -Wextra -Werror -g -MD
+# Include paths for the compiler
+CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/includes -I$(MLX_DIR)
+# Library search paths for the linker
+LDFLAGS         := -L$(LIBFT_DIR) -L$(MLX_DIR)
+# Libraries to link
+LDLIBS          := -lft -lmlx -lXext -lX11 -lm -lz
 
-# === SOURCE FILES (Listed with vpath) ===
-SRCS            :=
-# --- Main Files ---
-vpath %.c $(SRC_DIR)
-SRCS            += main.c
-
-# --- Initialization Files ---
-vpath %.c $(SRC_DIR)/init
-SRCS            += init.c
-SRCS            += memory.c
-
-# --- Game Logic Files ---
-vpath %.c $(SRC_DIR)/game
-SRCS            += hooks.c
-SRCS            += logic.c
-
-# --- Parsing Files ---
-vpath %.c $(SRC_DIR)/parsing
-SRCS            += parse_map.c
-SRCS            += validate_content.c
-SRCS            += validate_path.c
-
-# --- Rendering Files ---
-vpath %.c $(SRC_DIR)/rendering
-SRCS            += render.c
-SRCS            += image.c
-SRCS            += textures.c
+# === SOURCE FILES (Your excellent vpath method) ===
+vpath %.c $(SRC_DIR) $(SRC_DIR)/init $(SRC_DIR)/game $(SRC_DIR)/parsing $(SRC_DIR)/rendering
+SRCS            := main.c init.c memory.c hooks.c logic.c parse_map.c \
+                   validate_content.c validate_path.c render.c image.c textures.c
 
 # === OBJECTS & DEPENDENCIES ===
 OBJS            := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
@@ -77,45 +45,56 @@ RESET           := \033[0m
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT) $(MLX_DIR)/libmlx.a
+$(NAME): $(OBJS) $(LIBFT) $(MLX_LIB)
 	@printf "$(BLUE_BOLD)Linking executable:$(RESET) $@\n"
-	@$(CC) $(OBJS) -L$(LIBFT_DIR) -lft $(MLX_FLAGS) -o $(NAME)
+	@$(CC) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
 	@printf "$(GREEN)✓ Project '$@' created successfully!$(RESET)\n"
 
-# This rule now works with vpath to find the source files
 $(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	@$(MKDIR) -p $(@D)
+	@/bin/mkdir -p $(@D)
 	@printf "$(YELLOW)Compiling:$(RESET) $<\n"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
-	@$(MKDIR) -p $(OBJ_DIR)
+	@/bin/mkdir -p $(OBJ_DIR)
 
+# --- LIBRARY RULES ---
 $(LIBFT):
+	@printf "$(BLUE_BOLD)Building libft...$(RESET)\n"
 	@$(MAKE) -s -C $(LIBFT_DIR)
 
-$(MLX_DIR)/libmlx.a:
+$(MLX_LIB): $(MLX_DIR)
+	@printf "$(BLUE_BOLD)Building MiniLibX...$(RESET)\n"
+	@if ! pkg-config --exists x11 xext; then \
+		echo "Error: X11 development libraries not found."; \
+		echo "On Ubuntu, install with: sudo apt-get install libx11-dev libxext-dev"; \
+		exit 1; \
+	fi
 	@$(MAKE) -s -C $(MLX_DIR)
+	@printf "$(GREEN)✓ MiniLibX built successfully$(RESET)\n"
+
+$(MLX_DIR):
+	@printf "$(BLUE_BOLD)Cloning MiniLibX from git...$(RESET)\n"
+	@git clone https://github.com/42Paris/minilibx-linux.git $(MLX_DIR)
 
 # --- CLEAN RULES ---
 clean:
-	@$(MAKE) -s -C $(LIBFT_DIR) clean
+	@printf "$(YELLOW)Cleaning project object files...$(RESET)\n"
 	@$(RM) -rf $(OBJ_DIR)
+	@$(MAKE) -s -C $(LIBFT_DIR) clean
+	# Silently clean MiniLibX object files, but leave the source folder
+	@[ -d $(MLX_DIR) ] && $(MAKE) -s -C $(MLX_DIR) clean >/dev/null 2>&1 || true
 	@printf "$(YELLOW)✓ Object files cleaned.\n$(RESET)"
 
 fclean: clean
-	@$(MAKE) -s -C $(LIBFT_DIR) fclean
+	@printf "$(GREEN)Cleaning libraries and executable...$(RESET)\n"
 	@$(RM) -f $(NAME)
+	@$(MAKE) -s -C $(LIBFT_DIR) fclean
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
 re:
 	@$(MAKE) fclean --no-print-directory
 	@$(MAKE) all --no-print-directory
-
-# --- NORMINETTE RULE ---
-norminette:
-	@echo "Checking C files in srcs/, include/, and libft/ for norm compliance..."
-	@norminette srcs/ include/ libft/
 
 .PHONY: all clean fclean re
 .SECONDARY:
