@@ -28,11 +28,12 @@ BONUS_FLAG      := -DBONUS_PART=1
 # === SOURCE FILES ===
 vpath %.c $(SRC_DIRS)
 
-SHARED_SRCS     := main.c init.c parse_map.c validate_content.c \
+# UPDATED: init.c is no longer shared
+SHARED_SRCS     := main.c parse_map.c validate_content.c \
                    validate_path.c image.c
-MANDATORY_SRCS  := hooks.c textures.c memory.c render.c
+MANDATORY_SRCS  := hooks.c textures.c memory.c render.c init.c
 BONUS_SRCS      := hooks_bonus.c textures_bonus.c logic.c memory_bonus.c \
-                   render_bonus.c
+                   render_bonus.c init_bonus.c
 
 # === OBJECT FILES ===
 OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(SHARED_SRCS:.c=.o)) \
@@ -49,28 +50,21 @@ BLUE_BOLD       := \033[1;34m
 RESET           := \033[0m
 
 # === MAIN RULES ===
-# Default 'make' will run the 'mandatory' rule
 .DEFAULT_GOAL   := all
 all: mandatory
 
 -include $(DEPS)
 
 # --- TARGETS ---
-# These are now "phony" targets that describe a build process,
-# not just a single file.
-
-# Rule to build the MANDATORY version
 mandatory: $(OBJS_MANDATORY) $(LIBFT) $(MLX_LIB)
 	@printf "$(BLUE_BOLD)Linking MANDATORY executable:$(RESET) $(NAME)\n"
 	@$(CC) $(OBJS_MANDATORY) -o $(NAME) $(LDFLAGS) $(LDLIBS)
 	@printf "$(GREEN)✓ Mandatory project '$(NAME)' created successfully!$(RESET)\n"
 
-# Rule to build the BONUS version
 bonus: $(OBJS_BONUS) $(LIBFT) $(MLX_LIB)
 	@printf "$(BLUE_BOLD)Linking BONUS executable:$(RESET) $(NAME)\n"
 	@$(CC) $(OBJS_BONUS) -o $(NAME) $(LDFLAGS) $(LDLIBS)
 	@printf "$(GREEN)✓ Bonus project '$(NAME)' created successfully!$(RESET)\n"
-
 
 # --- COMPILATION RULES ---
 $(OBJ_DIR_MAND)/%.o: %.c

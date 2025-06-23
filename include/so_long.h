@@ -35,11 +35,11 @@
 # define SCALE_FACTOR 1.75 // Use integers or .0 for factors to avoid float issues
 # define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR)
 # define ANIMATION_SPEED 100
-# define UI_HEIGHT 60
 
 // --- Bonus-Only Constants ---
 # ifdef BONUS_PART
 #  define BABA_WALK_FRAMES 12
+# define UI_HEIGHT 60
 # endif
 
 // --- Asset Paths ---
