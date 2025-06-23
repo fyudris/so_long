@@ -5,30 +5,43 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/23 15:34:08 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 15:34:20 by fyudris          ###   ########.fr       */
+/*   Created: 2025/06/17 20:45:29 by fyudris           #+#    #+#             */
+/*   Updated: 2025/06/23 12:48:45 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../include/so_long.h"
 
+/**
+ * @brief A helper to free one animation sequence's allocated memory.
+ */
 static void	free_animation(t_data *data, t_animation *anim)
 {
 	int	i;
 
-	if (data && data->mlx && anim && anim->frames)
+	if (anim && anim->frames)
 	{
 		i = 0;
+		// First, destroy each individual image frame in the animation
 		while (i < anim->frame_count)
 		{
 			if (anim->frames[i].ptr)
 				mlx_destroy_image(data->mlx, anim->frames[i].ptr);
 			i++;
 		}
+		// Then, free the array that held the pointers to those frames
 		free(anim->frames);
 	}
 }
 
+/**
+ * @brief Frees all memory associated with the map.grid (char **).
+ *
+ * It loops through each row, freeing the string, and then frees the
+ * array of pointers itself.
+ *
+ * @param map A pointer to the t_map struct.
+ */
 static void	free_map_grid(t_map *map)
 {
 	int	i;
@@ -46,22 +59,48 @@ static void	free_map_grid(t_map *map)
 	map->grid = NULL;
 }
 
+
+
+/**
+ * @brief The centralized cleanup function to free all allocated memory.
+ * This has been updated to use the free_animation helper.
+ */
 void	cleanup_and_exit(t_data *data, int status)
 {
+	int	i;
+
 	if (!data)
 		exit(status);
-	// --- Free MANDATORY Textures ---
+	// Free every animation struct
 	free_animation(data, &data->textures.player_down);
 	free_animation(data, &data->textures.player_up);
 	free_animation(data, &data->textures.player_left);
 	free_animation(data, &data->textures.player_right);
+	free_animation(data, &data->textures.player_txt);
+	free_animation(data, &data->textures.wall);
+	free_animation(data, &data->textures.wall_txt);
 	free_animation(data, &data->textures.fort_wall);
 	free_animation(data, &data->textures.key);
+	free_animation(data, &data->textures.key_txt);
 	free_animation(data, &data->textures.door);
-	// --- Free other allocated memory ---
+	free_animation(data, &data->textures.door_txt);
+	free_animation(data, &data->textures.rock);
+	free_animation(data, &data->textures.rock_txt);
+	free_animation(data, &data->textures.you_txt);
+	free_animation(data, &data->textures.open_txt);
+	free_animation(data, &data->textures.push_txt);
+	free_animation(data, &data->textures.win_txt);
+	free_animation(data, &data->textures.is_txt);
+	// Free every UI texture animation
+	free_animation(data, &data->textures.ui_move_icon);
+	free_animation(data, &data->textures.ui_key_icon);
+	free_animation(data, &data->textures.ui_x_icon);
+	i = -1;
+	while(++i < 10)
+		free_animation(data, &data->textures.ui_digits[i]);
 	free_map_grid(&data->map);
 	if (data->game_buffer.ptr)
-		mlx_destroy_image(data->mlx, data->game_buffer.ptr);
+        mlx_destroy_image(data->mlx, data->game_buffer.ptr);
 	if (data->win && data->mlx)
 		mlx_destroy_window(data->mlx, data->win);
 	if (data->mlx)

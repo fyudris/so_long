@@ -1,96 +1,92 @@
 /* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   so_long.h                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 13:07:40 by fyudris          ###   ########.fr       */
-/*                                                                            */
+/* */
+/* :::      ::::::::   */
+/* so_long.h                                          :+:      :+:    :+:   */
+/* +:+ +:+         +:+     */
+/* By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
+/* +#+#+#+#+#+   +#+           */
+/* Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
+/* Updated: 2025/06/23 15:30:00 by fyudris          ###   ########.fr       */
+/* */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
-/* ----- Includes ----- */
+/*============================================================================*/
+/* INCLUDES                                  */
+/*============================================================================*/
 
 # include <mlx.h>
 # include <stdbool.h>
 # include <stdlib.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include "../libft/includes/libft.h"
-# include "../libft/includes/ft_printf.h"
-# include "../libft/includes/get_next_line.h"
+# include "libft.h" // Assuming libft.h is in the include path via -Ilibft
+# include "ft_printf.h"
+# include "get_next_line.h"
 
-/* ----- Game Constants ----- */
+/*============================================================================*/
+/* CONSTANTS                                  */
+/*============================================================================*/
 
-// # define TILE_SIZE 24
+// --- Game Style & Sizing ---
 # define ORIGINAL_TILE_SIZE 25
-# define SCALE_FACTOR 1.75
-# define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR) // e.g., 48
-# define ANIMATION_FRAMES 4 // 4 frames per direction
-# define BABA_WALK_FRAMES 12
-# define ANIMATION_SPEED 100 // higher number = slower animation
-# define UI_HEIGHT 60 // The height in pixels of the top UI bar
+# define SCALE_FACTOR 1.75 // Use integers or .0 for factors to avoid float issues
+# define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR)
+# define ANIMATION_SPEED 100
+# define UI_HEIGHT 60
 
-/* ----- Assets Path ----- */
+// --- Bonus-Only Constants ---
+# ifdef BONUS_PART
+#  define BABA_WALK_FRAMES 12
+# endif
+
+// --- Asset Paths ---
+// Mandatory assets
 # define BABA_PATH "./assets/characters/Baba.xpm"
 # define DOOR_PATH "./assets/statics/Door.xpm"
 # define KEY_PATH "./assets/statics/Key.xpm"
-# define ROCK_PATH "./assets/statics/Rock.xpm"
-# define FONT_PATH "./assets/texts/Font.xpm"
-# define IS_PATH "./assets/texts/Is-Text.xpm"
-# define LEVEL_PATH "./assets/texts/Level-Text.xpm"
-# define MOVE_PATH "./assets/texts/Move-Text.xpm"
-# define OPEN_PATH "./assets/texts/Open-Text.xpm"
-# define PUSH_PATH "./assets/texts/Push-Text.xpm"
-# define WIN_PATH "./assets/texts/Win-Text.xpm"
-# define YOU_PATH "./assets/texts/You-Text.xpm"
 # define FORT_PATH "./assets/tiles/Fort.xpm"
-# define WALL_PATH "./assets/tiles/Wall.xpm"
-# define FONT_PATH "./assets/texts/Font.xpm"
 
-/* ----- Keycodes for Linux X11 ----- */
+// Bonus assets
+# ifdef BONUS_PART
+#  define ROCK_PATH "./assets/statics/Rock.xpm"
+#  define FONT_PATH "./assets/texts/Font.xpm"
+#  define IS_PATH "./assets/texts/Is-Text.xpm"
+#  define MOVE_PATH "./assets/texts/Move-Text.xpm"
+#  define OPEN_PATH "./assets/texts/Open-Text.xpm"
+#  define PUSH_PATH "./assets/texts/Push-Text.xpm"
+#  define WIN_PATH "./assets/texts/Win-Text.xpm"
+#  define YOU_PATH "./assets/texts/You-Text.xpm"
+#  define WALL_PATH "./assets/tiles/Wall.xpm"
+# endif
 
+// --- Keycodes for Linux X11 ---
 # define KEY_W 119
 # define KEY_A 97
 # define KEY_S 115
 # define KEY_D 100
 # define KEY_ESC 65307
 
-/* ----- Player Direction ----- */
-typedef enum	e_direction
-{
-	DOWN,
-	UP,
-	LEFT,
-	RIGHT
-} t_direction;
+/*============================================================================*/
+/* DATA STRUCTURES                             */
+/*============================================================================*/
 
-/* ----- Data Structures ----- */
+typedef enum e_direction { DOWN, UP, LEFT, RIGHT } t_direction;
+typedef struct s_vector { int x; int y; } t_vector;
 
-// 2D coordinates
-typedef struct s_vector
-{
-	int	x;
-	int	y;
-}	t_vector;
-
-// Image/texture data
 typedef struct s_img
 {
 	void	*ptr;
-	void	*addr; // Pointer to the raw pixel data buffer
+	void	*addr;
 	int		width;
 	int		height;
-	int		bpp; // Bits per pixel
-	int		line_len; // The number of bytes in one horizon
-	int		endian; // The endianess of the image data
+	int		bpp;
+	int		line_len;
+	int		endian;
 }	t_img;
 
-// Map data
 typedef struct s_map
 {
 	char		**grid;
@@ -100,34 +96,39 @@ typedef struct s_map
 	int			exits;
 }	t_map;
 
-// Manage the state of game rules
+typedef struct s_animation
+{
+	t_img	*frames;
+	int		frame_count;
+}	t_animation;
+
+# ifdef BONUS_PART
+// This struct is only needed for the bonus part
 typedef struct s_game_rules
 {
 	bool	key_is_activated;
 	bool	wall_is_pushable;
 	bool	rock_is_pushable;
 }	t_game_rules;
+# endif
 
-typedef struct	s_animation
-{
-	t_img	*frames;
-	int		frame_count;
-}	t_animation;
-
-// Hold game textures
 typedef struct s_textures
 {
+	// --- Mandatory Textures ---
 	t_animation	player_down;
 	t_animation	player_up;
 	t_animation	player_left;
 	t_animation	player_right;
+	t_animation	key;
+	t_animation	door;
+	t_animation	fort_wall; // This is your mandatory '1' wall
+
+	// --- Bonus Textures ---
+# ifdef BONUS_PART
 	t_animation	player_txt;
 	t_animation	wall;
 	t_animation	wall_txt;
-	t_animation	fort_wall;
-	t_animation	key;
 	t_animation	key_txt;
-	t_animation	door;
 	t_animation	door_txt;
 	t_animation	rock;
 	t_animation	rock_txt;
@@ -141,63 +142,58 @@ typedef struct s_textures
 	t_animation	ui_x_icon;
 	t_animation	ui_digits[10];
 	t_vector	digit_coords[10];
+# endif
 }	t_textures;
 
-// Main game data struct, passed to all function
+// The main game data struct, passed to all functions
 typedef struct s_data
 {
 	void			*mlx;
 	void			*win;
-	t_img			background;
 	t_img			game_buffer;
 	t_map			map;
 	t_vector		player_pos;
 	int				move_count;
-	bool			player_has_key;
 	int				keys_collected;
-	t_game_rules	rules;
 	t_textures		textures;
 	t_direction		player_dir;
 	int				anim_frame;
 	int				anim_timer;
+
+# ifdef BONUS_PART
+	t_game_rules	rules;
 	bool			is_moving;
+# endif
 }	t_data;
 
-/* ----- Function Prototypes ----- */
+/*============================================================================*/
+/* FUNCTION PROTOTYPES                           */
+/*============================================================================*/
 
-// init.c
+// --- Shared Functions ---
 void	init_game_data(t_data *data);
 void	init_mlx(t_data *data);
-
-// Map Parsing
 void	parse_map(char *filename, t_data *data);
-
-// Map Validation
 void	validate_map_content(t_data *data);
-
-// Path Validation
 void	validate_path(t_data *data);
-
-// Rendering
+int		render_frame(t_data *data);
+void	load_all_textures(t_data *data);
+void	cleanup_and_exit(t_data *data, int status);
+int		handle_close_window(t_data *data);
+int		handle_keypress(int keycode, t_data *data);
+// Image utils
 unsigned int	get_pixel_from_img(t_img *img, int x, int y);
 void			put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
+void			unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 void			upscale_sprite(t_img *dest, t_img *src);
-int				render_frame(t_data *data);
-void			load_all_textures(t_data *data);
-void	unpack_sprite(t_img *dest, t_img *src, t_vector pos);
-void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
-void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
-void	clear_image_buffer(t_img *img, int color);
+void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
+void			clear_image_buffer(t_img *img, int color);
 
-// Memory
-void	cleanup_and_exit(t_data *data, int status);
-
-// Game
-int	handle_close_window(t_data *data);
-int	handle_keyrelease(int keycode, t_data *data);
-int	handle_keypress(int keycode, t_data *data);
+// --- Bonus-Only Functions ---
+# ifdef BONUS_PART
+int		handle_keyrelease(int keycode, t_data *data);
 bool	handle_push(t_data *data, t_vector obj_pos);
+void	update_game_rules(t_data *data);
+# endif
 
-// UI
-// void	draw_number(t_data *data, int n, t_vector pos);
 #endif

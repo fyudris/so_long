@@ -1,36 +1,46 @@
-# === CONFIGURATION ===
+# === EXECUTABLE NAME ===
 NAME            := so_long
+
+# === CONFIGURATION ===
 CC              := cc
 RM              := rm -f
+MKDIR           := /bin/mkdir -p
 
 # === DIRECTORIES ===
-OBJ_DIR         := obj
-SRC_DIR         := srcs
-INC_DIR         := include
+OBJ_DIR_MAND    := obj/mandatory
+OBJ_DIR_BONUS   := obj/bonus
 LIBFT_DIR       := libft
 MLX_DIR         := minilibx
+INC_DIR         := include
+SRC_DIRS        := srcs srcs/init srcs/parsing srcs/game srcs/rendering
 
 # === LIBRARIES ===
 LIBFT           := $(LIBFT_DIR)/libft.a
 MLX_LIB         := $(MLX_DIR)/libmlx.a
 
-# === FLAGS (Improved Separation) ===
+# === FLAGS ===
 CFLAGS          := -Wall -Wextra -Werror -g -MD
-# Include paths for the compiler
 CPPFLAGS        := -I$(INC_DIR) -I$(LIBFT_DIR)/includes -I$(MLX_DIR)
-# Library search paths for the linker
 LDFLAGS         := -L$(LIBFT_DIR) -L$(MLX_DIR)
-# Libraries to link
 LDLIBS          := -lft -lmlx -lXext -lX11 -lm -lz
+BONUS_FLAG      := -DBONUS_PART=1
 
-# === SOURCE FILES (Your excellent vpath method) ===
-vpath %.c $(SRC_DIR) $(SRC_DIR)/init $(SRC_DIR)/game $(SRC_DIR)/parsing $(SRC_DIR)/rendering
-SRCS            := main.c init.c memory.c hooks.c logic.c parse_map.c \
-                   validate_content.c validate_path.c render.c image.c textures.c
+# === SOURCE FILES ===
+vpath %.c $(SRC_DIRS)
 
-# === OBJECTS & DEPENDENCIES ===
-OBJS            := $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
-DEPS            := $(OBJS:.o=.d)
+SHARED_SRCS     := main.c init.c parse_map.c validate_content.c \
+                   validate_path.c image.c
+MANDATORY_SRCS  := hooks.c textures.c memory.c render.c
+BONUS_SRCS      := hooks_bonus.c textures_bonus.c logic.c memory_bonus.c \
+                   render_bonus.c
+
+# === OBJECT FILES ===
+OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(SHARED_SRCS:.c=.o)) \
+                   $(addprefix $(OBJ_DIR_MAND)/, $(MANDATORY_SRCS:.c=.o))
+OBJS_BONUS      := $(addprefix $(OBJ_DIR_BONUS)/, $(SHARED_SRCS:.c=.o)) \
+                   $(addprefix $(OBJ_DIR_BONUS)/, $(BONUS_SRCS:.c=.o))
+
+DEPS            := $(OBJS_MANDATORY:.o=.d) $(OBJS_BONUS:.o=.d)
 
 # --- COLORS ---
 GREEN           := \033[0;32m
@@ -38,25 +48,40 @@ YELLOW          := \033[0;33m
 BLUE_BOLD       := \033[1;34m
 RESET           := \033[0m
 
-# === RULES ===
+# === MAIN RULES ===
+# Default 'make' will run the 'mandatory' rule
 .DEFAULT_GOAL   := all
+all: mandatory
 
 -include $(DEPS)
 
-all: $(NAME)
+# --- TARGETS ---
+# These are now "phony" targets that describe a build process,
+# not just a single file.
 
-$(NAME): $(OBJS) $(LIBFT) $(MLX_LIB)
-	@printf "$(BLUE_BOLD)Linking executable:$(RESET) $@\n"
-	@$(CC) $(OBJS) -o $@ $(LDFLAGS) $(LDLIBS)
-	@printf "$(GREEN)✓ Project '$@' created successfully!$(RESET)\n"
+# Rule to build the MANDATORY version
+mandatory: $(OBJS_MANDATORY) $(LIBFT) $(MLX_LIB)
+	@printf "$(BLUE_BOLD)Linking MANDATORY executable:$(RESET) $(NAME)\n"
+	@$(CC) $(OBJS_MANDATORY) -o $(NAME) $(LDFLAGS) $(LDLIBS)
+	@printf "$(GREEN)✓ Mandatory project '$(NAME)' created successfully!$(RESET)\n"
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
-	@/bin/mkdir -p $(@D)
-	@printf "$(YELLOW)Compiling:$(RESET) $<\n"
+# Rule to build the BONUS version
+bonus: $(OBJS_BONUS) $(LIBFT) $(MLX_LIB)
+	@printf "$(BLUE_BOLD)Linking BONUS executable:$(RESET) $(NAME)\n"
+	@$(CC) $(OBJS_BONUS) -o $(NAME) $(LDFLAGS) $(LDLIBS)
+	@printf "$(GREEN)✓ Bonus project '$(NAME)' created successfully!$(RESET)\n"
+
+
+# --- COMPILATION RULES ---
+$(OBJ_DIR_MAND)/%.o: %.c
+	@$(MKDIR) -p $(@D)
+	@printf "$(YELLOW)Compiling [MANDATORY]:$(RESET) $<\n"
 	@$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
-$(OBJ_DIR):
-	@/bin/mkdir -p $(OBJ_DIR)
+$(OBJ_DIR_BONUS)/%.o: %.c
+	@$(MKDIR) -p $(@D)
+	@printf "$(YELLOW)Compiling [BONUS]:$(RESET) $<\n"
+	@$(CC) $(CPPFLAGS) $(CFLAGS) $(BONUS_FLAG) -c $< -o $@
 
 # --- LIBRARY RULES ---
 $(LIBFT):
@@ -80,9 +105,8 @@ $(MLX_DIR):
 # --- CLEAN RULES ---
 clean:
 	@printf "$(YELLOW)Cleaning project object files...$(RESET)\n"
-	@$(RM) -rf $(OBJ_DIR)
+	@$(RM) -rf obj
 	@$(MAKE) -s -C $(LIBFT_DIR) clean
-	# Silently clean MiniLibX object files, but leave the source folder
 	@[ -d $(MLX_DIR) ] && $(MAKE) -s -C $(MLX_DIR) clean >/dev/null 2>&1 || true
 	@printf "$(YELLOW)✓ Object files cleaned.\n$(RESET)"
 
@@ -96,6 +120,6 @@ re:
 	@$(MAKE) fclean --no-print-directory
 	@$(MAKE) all --no-print-directory
 
-.PHONY: all clean fclean re
+.PHONY: all bonus mandatory clean fclean re
 .SECONDARY:
 .DELETE_ON_ERROR:
