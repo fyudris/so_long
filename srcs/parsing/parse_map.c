@@ -6,22 +6,34 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 02:54:15 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 14:16:02 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/24 01:48:58 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/**
+ * @file parse_map.c
+ * @brief Functions for parsing and validating the .ber map file.
+ * 
+ * @details This file orchestrates the process of reading a map file,
+ * converting it from a file into a 2D array (grid), and then running
+ * a series of validations to ensure it conforms to the project's rules.
+ * It uses a temporary linked list to handle maps of unknown height before
+ * allocating the final memory block for the grid.
+ */
+
 #include "../../include/so_long.h"
 
- /**
-  * @brief Reads the map from a file descriptor into a temporary list.
-  * 
-  * This function reads the map line by line, calculates dimensions, and stores
-  * each line in a `t_list` for validation before final allocation.
-  * 
-  * @param fd
-  * @param map_list_head
-  * @param data
-  */
+/**
+ * @brief Reads the map from a file descriptor into a temporary linked list.
+ * 
+ * @details This function reads the map file line by line using `get_next_line`.
+ * It uses the first line to determine the required width of the map.
+ *
+ * @param fd The file descriptor for the open map file.
+ * @param map_list_head A pointer to the head of the linked list.
+ * @param data A pointer to the main game data struct, where the map's
+ * dimensions (`size.x` and `size.y`) will be stored.
+ */
 static void	read_map_to_list(int fd, t_list **map_list_head, t_data *data)
 {
 	char	*line;
@@ -35,9 +47,7 @@ static void	read_map_to_list(int fd, t_list **map_list_head, t_data *data)
 			break ;
 		if (is_first_line)
 		{
-			// Measure the length of first line
 			data->map.size.x = ft_strlen(line);
-			// Substract 1 if there's a '\n' at the end
 			if (line[data->map.size.x - 1] == '\n')
 				data->map.size.x--;
 			is_first_line = 0;
@@ -51,12 +61,14 @@ static void	read_map_to_list(int fd, t_list **map_list_head, t_data *data)
 
 /**
  * @brief Converts the linked list map into a 2D char array (grid).
+ * 
+ * @details It performs a crucial validation: it checks
+ * if every line has the same length as the first one. If not, the map is
+ * not rectangular, and the program exits with an error.
  *
- * This function allocates the final grid and copies data from the list.
- * It performs the final, crucial check to ensure the map is rectangular.
- *
- * @param head A pointer to the head of the linked list.
- * @param data A pointer to the main game data struct to populate.
+ * @param head A pointer to the head of the linked list containing map lines.
+ * @param data A pointer to the main game data struct. This function will
+ * populate `data->map.grid`.
  */
 static void	convert_list_to_grid(t_list *head, t_data *data)
 {
@@ -88,11 +100,19 @@ static void	convert_list_to_grid(t_list *head, t_data *data)
 /**
  * @brief Main entry point for the map parsing module.
  * 
- * This function orchestrates the entire map reading and validation process.
- * 
- * @param filename The path to the .ber map file
- * @param data A pointer to the main game data struct.
- * 
+ * @details This function orchestrates the entire map reading and validation
+ * process in the correct order:
+ * 1. Opens the specified file.
+ * 2. Reads the file content into a temporary linked list.
+ * 3. Closes the file.
+ * 4. Converts the linked list into the final `char **` grid.
+ * 5. Frees the temporary linked list.
+ * 6. Calls subsequent functions to validate the map's content (walls, items)
+ * and ensure a valid path exists.
+ *
+ * @param filename The path to the `.ber` map file provided as a command-line 
+ * argument.
+ * @param data A pointer to the main game data struct to be populated.
  */
 void	parse_map(char *filename, t_data *data)
 {

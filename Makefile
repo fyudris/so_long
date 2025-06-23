@@ -28,7 +28,6 @@ BONUS_FLAG      := -DBONUS_PART=1
 # === SOURCE FILES ===
 vpath %.c $(SRC_DIRS)
 
-# UPDATED: init.c is no longer shared
 SHARED_SRCS     := main.c parse_map.c validate_content.c \
                    validate_path.c image.c
 MANDATORY_SRCS  := hooks.c textures.c memory.c render.c init.c
@@ -105,15 +104,22 @@ clean:
 	@printf "$(YELLOW)✓ Object files cleaned.\n$(RESET)"
 
 fclean: clean
-	@printf "$(GREEN)Cleaning libraries and executable...$(RESET)\n"
+	@printf "$(GREEN)Cleaning libraries, executable, and MiniLibX folder...$(RESET)\n"
 	@$(RM) -f $(NAME)
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
+	# ADDED: This line removes the entire minilibx directory
+	@$(RM) -rf $(MLX_DIR)
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 
 re:
 	@$(MAKE) fclean --no-print-directory
 	@$(MAKE) all --no-print-directory
 
-.PHONY: all bonus mandatory clean fclean re
+# --- HELPER RULES ---
+norm:
+	@printf "$(BLUE_BOLD)Checking Norm compliance...$(RESET)\n"
+	@norminette $(INC_DIR) srcs libft
+
+.PHONY: all bonus mandatory clean fclean re norm
 .SECONDARY:
 .DELETE_ON_ERROR:

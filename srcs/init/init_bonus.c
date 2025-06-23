@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   init_bonus.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:10 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 13:00:36 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/24 01:01:25 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,8 @@ void	init_mlx(t_data *data)
 {
 	int	win_width;
 	int	win_height;
-	int buffer_width;
-	int buffer_height;
+	int	buffer_width;
+	int	buffer_height;
 
 	data->mlx = mlx_init();
 	if (!data->mlx)
@@ -47,14 +47,13 @@ void	init_mlx(t_data *data)
 		ft_print_error("Failed to create window.");
 	buffer_width = data->map.size.x * TILE_SIZE;
 	buffer_height = data->map.size.y * TILE_SIZE;
-	data->game_buffer.ptr = mlx_new_image(data->mlx, buffer_width, buffer_height);
+	data->game_buffer.ptr = mlx_new_image(data->mlx, buffer_width,
+			buffer_height);
 	if (!data->game_buffer.ptr)
-	{
-		ft_printf("Error\nFailed to create game buffer image.\n");
 		cleanup_and_exit(data, 1);
-	}
 	data->game_buffer.addr = mlx_get_data_addr(data->game_buffer.ptr,
-		&data->game_buffer.bpp, &data->game_buffer.line_len, &data->game_buffer.endian);
+			&data->game_buffer.bpp, &data->game_buffer.line_len,
+			&data->game_buffer.endian);
 	data->game_buffer.width = buffer_width;
 	data->game_buffer.height = buffer_height;
 }

@@ -6,16 +6,26 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 12:26:47 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 17:47:24 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/24 01:51:43 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/**
+ * @file validate_content.c
+ * @brief Functions for validating the content of the parsed map.
+ * 
+ * @details This file contains the logic to ensure the map adheres to the
+ * game's structural rules after it has been loaded into a 2D grid. It
+ * checks for enclosing walls, valid characters, and the correct number
+ * of players, exits, and collectibles.
+ */
 
 #include "../../include/so_long.h"
 
 /**
- * @brief Checks if the map is properly enclsed by walls ('1')
- * 
- * @param data A pointer to the main game data struct
+ * @brief Checks if the map is properly enclosed by walls ('1').
+ *
+ * @param data A pointer to the main game data struct containing the map.
  */
 static void	check_walls(t_data *data)
 {
@@ -25,7 +35,6 @@ static void	check_walls(t_data *data)
 	y = 0;
 	while (y < data->map.size.y)
 	{
-		// For the very first and very last row, check every character.
 		if (y == 0 || y == data->map.size.y - 1)
 		{
 		 	x = 0;
@@ -37,7 +46,6 @@ static void	check_walls(t_data *data)
 		}
 		else
 		{
-			// For all middle rows, only check the first and last characters.
 			if (data->map.grid[y][0] != '1' ||
 				data->map.grid[y][data->map.size.x - 1] != '1')
 				ft_print_error("Map is not enclosed by walls.");
@@ -46,34 +54,12 @@ static void	check_walls(t_data *data)
 	}
 }
 
-/*
- * Map Character Legend:
- *
- * 1: Fort (Impassable Wall)
- * 0: Empty Space
- * P: Player Start Position
- * C: Key (Collectible Item)
- * E: Door (Final Exit)
- *
- * --- Custom Game Objects ---
- * D: Door Obstacle
- * W: Wall Obstacle
- * R: Rock Obstacle
- * K: Key Object (Pushable)
- *
- * --- Custom Text Blocks ---
- * b, y: "BABA", "YOU"
- * d, n: "DOOR", "WIN"
- * i:    "IS"
- * k, w, r: "KEY", "WALL", "ROCK"
- * o, p, s: "OPEN", "PUSH", "STOP"
-*/
-
 /**
  * @brief Checks if a character is a valid map component.
- *
- * This function validates a character by checking if it exists within a
- * predefined string of all allowed characters.
+ * @details This function validates a character by checking if it exists 
+ * within a predefined string of all allowed characters. 
+ * This list includes both mandatory (`0`, `1`, `P`, `C`, `E`) and bonus 
+ * characters (text blocks).
  *
  * @param c The character to check.
  * @return int Returns 1 if the character is valid, 0 otherwise.
