@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 12:55:16 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 13:36:54 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,7 +220,7 @@ void	load_all_textures(t_data *data)
 	load_animation(data, &data->textures.open_txt, OPEN_PATH, 3,
 		(t_vector){50,0});
 	load_animation(data, &data->textures.push_txt, PUSH_PATH, 3,
-		(t_vector){50,0});
+		(t_vector){0,0});
 	load_animation(data, &data->textures.win_txt, WIN_PATH, 3,
 		(t_vector){25,0});
 	init_digit_coords(data);
