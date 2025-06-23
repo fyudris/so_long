@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 20:45:29 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/21 01:11:17 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 12:48:45 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void	free_map_grid(t_map *map)
 void	cleanup_and_exit(t_data *data, int status)
 {
 	int	i;
-	
+
 	if (!data)
 		exit(status);
 	// Free every animation struct
@@ -99,6 +99,8 @@ void	cleanup_and_exit(t_data *data, int status)
 	while(++i < 10)
 		free_animation(data, &data->textures.ui_digits[i]);
 	free_map_grid(&data->map);
+	if (data->game_buffer.ptr)
+        mlx_destroy_image(data->mlx, data->game_buffer.ptr);
 	if (data->win && data->mlx)
 		mlx_destroy_window(data->mlx, data->win);
 	if (data->mlx)

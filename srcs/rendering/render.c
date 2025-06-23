@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/21 00:20:20 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 13:04:41 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static t_animation	*get_current_player_anim(t_data *data);
 // static void			draw_tile(t_data *data, int x, int y);
 static void			draw_ui(t_data *data);
 static int	player_anim_frame(t_data *data, t_animation *player_anim);
-static void	draw_map(t_data *data);
+static void draw_map_to_buffer(t_data *data);
 static void	draw_ui(t_data *data);
 
 /**
@@ -31,28 +31,40 @@ static void	draw_ui(t_data *data);
 int	render_frame(t_data *data)
 {
 	t_animation	*player_anim;
-	// int			x;
-	// int			y;
+	int			player_frame_index;
 
-	// 1. Clear the entire window to black to prevent "smearing".
-	mlx_clear_window(data->mlx, data->win);
-	// 2. Update the global animation timer.
+	// 1. Update animation timers
 	data->anim_timer++;
 	if (data->anim_timer >= ANIMATION_SPEED)
 	{
 		data->anim_timer = 0;
-		// This frame number will be used by ALL passively animated objects.
 		data->anim_frame++;
 	}
-	draw_map(data);
-	// 4. Draw the player on top of the map with offset
+
+	// 2. Clear the BACK BUFFER to black to prevent after-images.
+	clear_image_buffer(&data->game_buffer, 0x000000);
+
+	// 3. Draw the entire map to the off-screen buffer.
+	draw_map_to_buffer(data);
+
+	// 4. Draw the player ON TOP of the map buffer.
 	player_anim = get_current_player_anim(data);
 	if (player_anim && player_anim->frames)
-		mlx_put_image_to_window(data->mlx, data->win,
-			player_anim->frames[player_anim_frame(data, player_anim)].ptr,
-			data->player_pos.x * TILE_SIZE,
-			(data->player_pos.y * TILE_SIZE) + UI_HEIGHT);
+	{
+		player_frame_index = player_anim_frame(data, player_anim);
+		draw_sprite_to_buffer(&data->game_buffer,
+			&player_anim->frames[player_frame_index],
+			(t_vector){data->player_pos.x * TILE_SIZE, data->player_pos.y * TILE_SIZE});
+	}
+
+	// --- Final Window Drawing (in correct order) ---
+
+	// 5. Push the ENTIRE completed game buffer to the window in ONE call.
+	mlx_put_image_to_window(data->mlx, data->win, data->game_buffer.ptr, 0, UI_HEIGHT);
+
+	// 6. NOW, draw the UI elements directly on top of the window.
 	draw_ui(data);
+
 	return (0);
 }
 
@@ -60,13 +72,14 @@ int	render_frame(t_data *data)
 /**
  * @brief Draws the entire map grid with a vertical offset for the UI bar.
  */
-static void	draw_map(t_data *data)
+static void draw_map_to_buffer(t_data *data)
 {
-	int	x;
-	int	y;
-	char	tile_type;
+	int			x;
+	int			y;
+	char		tile_type;
 	t_animation	*anim;
-	int	frame;
+	int			frame;
+	t_img		*tile_img;
 
 	y = -1;
 	while (++y < data->map.size.y)
@@ -74,15 +87,17 @@ static void	draw_map(t_data *data)
 		x = -1;
 		while (++x < data->map.size.x)
 		{
+			// We need a black background first. Let's handle this in render_frame.
+
 			tile_type = data->map.grid[y][x];
 			anim = get_tile_animation(data, tile_type);
 			if (anim && anim->frames)
 			{
 				frame = data->anim_frame % anim->frame_count;
-				mlx_put_image_to_window(data->mlx, data->win,
-					anim->frames[frame].ptr,
-					x * TILE_SIZE,
-					(y * TILE_SIZE) + UI_HEIGHT); // <-- ADD OFFSET
+				tile_img = &anim->frames[frame];
+				// Use your existing function to draw the tile sprite to the buffer
+				draw_sprite_to_buffer(&data->game_buffer, tile_img,
+					(t_vector){x * TILE_SIZE, y * TILE_SIZE});
 			}
 		}
 	}
@@ -173,9 +188,9 @@ static t_animation	*get_tile_animation(t_data *data, char tile_type)
 	if (tile_type == 'R')
 		return (&data->textures.rock);
 	if (tile_type == 'r')
-		return (&data->textures.rock_txt); 
+		return (&data->textures.rock_txt);
 	// --- Add cases for your other game objects ---
-	
+
 	// --- Text Blocks ---
 	if (tile_type == 'p') // 'b' for "BABA" text
 		return (&data->textures.player_txt);

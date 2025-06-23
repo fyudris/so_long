@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:44:04 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/19 14:36:59 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 13:03:08 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 unsigned int	get_pixel_from_img(t_img *img, int x, int y)
 {
 	char	*pixel_address;
-	
+
 	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
 		return (0);
 	pixel_address = img->addr + (y * img->line_len + x * (img->bpp / 8));
@@ -31,7 +31,7 @@ unsigned int	get_pixel_from_img(t_img *img, int x, int y)
 void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color)
 {
 	char	*pixel_address;
-	
+
 	if (x < 0 || x >= img->width || y < 0 || y >= img->height)
 		return ;
 	pixel_address = img->addr + (y * img->line_len + x * (img->bpp / 8));
@@ -40,11 +40,11 @@ void	put_pixel_to_img(t_img *img, int x, int y, unsigned int color)
 
 /**
  * @brief copies a rectangular area of pixels from a source to a destination.
- * 
+ *
  * This function iterates through a defined rectangle on the source spritesheet
  * and copies each pixel to the destination image, effectively "unpacking" a
  * single sprite.
- * 
+ *
  * @param dest The destination image (must be pre-allocated)
  * @param src The source spritesheet
  * @param pos The top-left (x,y) coordinate of the sprite on the source sheet.
@@ -135,6 +135,39 @@ void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos)
 				// Put that color onto the large buffer at an offset
 				put_pixel_to_img(buffer, pos.x + x, pos.y + y, color);
 			}
+			x++;
+		}
+		y++;
+	}
+}
+
+/**
+ * @brief Fills an entire image buffer with a single color.
+ *
+ * This is used to clear our back buffer each frame to prevent ghosting.
+ * Using ft_memset is much faster than looping through every pixel.
+ * @param img The image buffer to clear.
+ * @param color The color to fill with (e.g., 0x000000 for black).
+ */
+void	clear_image_buffer(t_img *img, int color)
+{
+	int	x;
+	int	y;
+
+	// Use memset for solid colors like black for maximum speed.
+	if (color == 0x000000)
+	{
+		ft_memset(img->addr, 0, img->width * img->height * (img->bpp / 8));
+		return ;
+	}
+	// Fallback to pixel-by-pixel for other colors if needed.
+	y = 0;
+	while (y < img->height)
+	{
+		x = 0;
+		while (x < img->width)
+		{
+			put_pixel_to_img(img, x, y, color);
 			x++;
 		}
 		y++;

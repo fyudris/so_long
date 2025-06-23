@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 22:20:00 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 13:07:40 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,12 @@
 
 // # define TILE_SIZE 24
 # define ORIGINAL_TILE_SIZE 25
-# define SCALE_FACTOR 3
+# define SCALE_FACTOR 1.75
 # define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR) // e.g., 48
-# define ANIMATION_FRAMES 4 // 4 frames per direction 
+# define ANIMATION_FRAMES 4 // 4 frames per direction
 # define BABA_WALK_FRAMES 12
-# define ANIMATION_SPEED 200 // higher number = slower animation
-# define UI_HEIGHT 100 // The height in pixels of the top UI bar
+# define ANIMATION_SPEED 100 // higher number = slower animation
+# define UI_HEIGHT 60 // The height in pixels of the top UI bar
 
 /* ----- Assets Path ----- */
 # define BABA_PATH "./assets/characters/Baba.xpm"
@@ -140,7 +140,7 @@ typedef struct s_textures
 	t_animation	ui_key_icon;
 	t_animation	ui_x_icon;
 	t_animation	ui_digits[10];
-	t_vector	digit_coords[10]; 
+	t_vector	digit_coords[10];
 }	t_textures;
 
 // Main game data struct, passed to all function
@@ -149,6 +149,7 @@ typedef struct s_data
 	void			*mlx;
 	void			*win;
 	t_img			background;
+	t_img			game_buffer;
 	t_map			map;
 	t_vector		player_pos;
 	int				move_count;
@@ -185,6 +186,8 @@ int				render_frame(t_data *data);
 void			load_all_textures(t_data *data);
 void	unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
+void	draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
+void	clear_image_buffer(t_img *img, int color);
 
 // Memory
 void	cleanup_and_exit(t_data *data, int status);

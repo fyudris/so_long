@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 17:55:53 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/20 21:24:14 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/23 12:55:16 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,14 @@ static void	process_one_frame(t_data *data, t_img *final_img, t_img *sheet,
 	mlx_destroy_image(data->mlx, small_sprite.ptr);
 }
 
- 
+
 /**
  * @brief The main function for loading any animation sequence from a spritesheet.
  *
  * This function is now flexible. It can load an animation of any length,
  * starting at any (x,y) pixel coordinate on the sheet, and can read the
  * frames either horizontally or vertically.
- * 
+ *
  * Imagine your spritesheet is a grid. Let's assume your TILE_SIZE is 24.
  * (x=0,y=0)   (x=24,y=0)  (x=48,y=0)
  * +-----------+-----------+-----------+
@@ -83,15 +83,15 @@ static void	load_animation(t_data *data, t_animation *anim, char *path,
 	anim->frames = malloc(sizeof(t_img) * frame_count);
 	if (!anim->frames)
 		ft_print_error("Malloc failed for animation.");
-
-	// --- THIS IS THE MISSING/CORRECTED PART ---
 	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path,
 			&sheet.width, &sheet.height);
 	if (!sheet.ptr)
+	{
 		ft_printf("Failed to load spritesheet: %s", path);
+		cleanup_and_exit(data, 1);
+	}
 	sheet.addr = mlx_get_data_addr(sheet.ptr, &sheet.bpp,
 			&sheet.line_len, &sheet.endian);
-	// --- END OF FIX ---
 
 	i = -1;
 	while (++i < frame_count)
@@ -122,10 +122,13 @@ static void	load_baba_animation(t_data *data, t_animation *anim,
 	anim->frames = malloc(sizeof(t_img) * BABA_WALK_FRAMES);
 	if (!anim->frames)
 		ft_print_error("Malloc failed for Baba animation.");
-	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path, 
+	sheet.ptr = mlx_xpm_file_to_image(data->mlx, path,
 		&sheet.width, &sheet.height);
 	if (!sheet.ptr)
+	{
 		ft_print_error("Failed to load Baba spritesheet.");
+		cleanup_and_exit(data, 1);
+	}
 	sheet.addr = mlx_get_data_addr(sheet.ptr, &sheet.bpp,
 			&sheet.line_len, &sheet.endian);
 	row = -1;
@@ -165,32 +168,32 @@ static void	init_digit_coords(t_data *data)
 /**
  * @brief The main public function to load all visual assets for the game.
  * It calls specialized helpers for different types of spritesheets.
- * 
+ *
  * Column Index		Pixel Start (x)		Content
  * 0				0					BABA Text
  * 1 - 4			25, 50, 75, 100		Walk Right Animation (4 frames)
  * 5 - 8			125, 150, ...		Walk Left Animation (4 frames)
  * 9 - 12			225, ...			Walk Up Animation (4 frames)
  * 13 - 16			325, ...			Walk Down Animation (4 frames)
- * 
+ *
  * Indexing
- * Column		Coordinate	
+ * Column		Coordinate
  * 0			x = 0
  * 1			x = 25
  * 2			x = 50
  * 3			x = 75
  * 4			x = 100
- * 
+ *
  */
 void	load_all_textures(t_data *data)
 {
 	int	i;
-	
+
 	load_baba_animation(data, &data->textures.player_right, BABA_PATH, 1);
 	load_baba_animation(data, &data->textures.player_up, BABA_PATH, 5);
 	load_baba_animation(data, &data->textures.player_left, BABA_PATH, 9);
 	load_baba_animation(data, &data->textures.player_down, BABA_PATH, 13);
-	load_animation(data, &data->textures.player_txt, BABA_PATH, 3, 
+	load_animation(data, &data->textures.player_txt, BABA_PATH, 3,
 		(t_vector){0,0});
 	load_animation(data, &data->textures.wall, WALL_PATH, 3,
 		(t_vector){50,0});
@@ -202,13 +205,13 @@ void	load_all_textures(t_data *data)
 		(t_vector){100,0});
 	load_animation(data, &data->textures.key_txt, KEY_PATH, 3,
 		(t_vector){75,0});
-	load_animation(data, &data->textures.door, DOOR_PATH, 3, 
+	load_animation(data, &data->textures.door, DOOR_PATH, 3,
 		(t_vector){100,0});
-	load_animation(data, &data->textures.door_txt, DOOR_PATH, 3, 
+	load_animation(data, &data->textures.door_txt, DOOR_PATH, 3,
 		(t_vector){75, 0});
-	load_animation(data, &data->textures.rock, ROCK_PATH, 3, 
+	load_animation(data, &data->textures.rock, ROCK_PATH, 3,
 		(t_vector){100,0});
-	load_animation(data, &data->textures.rock_txt, ROCK_PATH, 3, 
+	load_animation(data, &data->textures.rock_txt, ROCK_PATH, 3,
 		(t_vector){75, 0});
 	load_animation(data, &data->textures.you_txt, YOU_PATH, 3,
 		(t_vector){50,0});
