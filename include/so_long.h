@@ -73,8 +73,18 @@
 /* DATA STRUCTURES                             */
 /*============================================================================*/
 
-typedef enum e_direction { DOWN, UP, LEFT, RIGHT } t_direction;
-typedef struct s_vector { int x; int y; } t_vector;
+typedef enum	e_direction
+{ 
+	DOWN,
+	UP,
+	LEFT,
+	RIGHT
+}	t_direction;
+typedef struct s_vector
+{
+	int x;
+	int y;
+}	t_vector;
 
 typedef struct s_img
 {
@@ -103,7 +113,6 @@ typedef struct s_animation
 }	t_animation;
 
 # ifdef BONUS_PART
-// This struct is only needed for the bonus part
 typedef struct s_game_rules
 {
 	bool	key_is_activated;
@@ -114,16 +123,13 @@ typedef struct s_game_rules
 
 typedef struct s_textures
 {
-	// --- Mandatory Textures ---
 	t_animation	player_down;
 	t_animation	player_up;
 	t_animation	player_left;
 	t_animation	player_right;
 	t_animation	key;
 	t_animation	door;
-	t_animation	fort_wall; // This is your mandatory '1' wall
-
-	// --- Bonus Textures ---
+	t_animation	fort_wall;
 # ifdef BONUS_PART
 	t_animation	player_txt;
 	t_animation	wall;
@@ -145,7 +151,6 @@ typedef struct s_textures
 # endif
 }	t_textures;
 
-// The main game data struct, passed to all functions
 typedef struct s_data
 {
 	void			*mlx;
@@ -171,22 +176,23 @@ typedef struct s_data
 /*============================================================================*/
 
 // --- Shared Functions ---
-void	init_game_data(t_data *data);
-void	init_mlx(t_data *data);
-void	parse_map(char *filename, t_data *data);
-void	validate_map_content(t_data *data);
-void	validate_path(t_data *data);
-int		render_frame(t_data *data);
-void	load_all_textures(t_data *data);
-void	cleanup_and_exit(t_data *data, int status);
-int		handle_close_window(t_data *data);
-int		handle_keypress(int keycode, t_data *data);
+void			init_game_data(t_data *data);
+void			init_mlx(t_data *data);
+void			parse_map(char *filename, t_data *data);
+void			validate_map_content(t_data *data);
+void			validate_path(t_data *data);
+int				render_frame(t_data *data);
+void			load_all_textures(t_data *data);
+void			cleanup_and_exit(t_data *data, int status);
+int				handle_close_window(t_data *data);
+int				handle_keypress(int keycode, t_data *data);
 // Image utils
 unsigned int	get_pixel_from_img(t_img *img, int x, int y);
 void			put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
 void			unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 void			upscale_sprite(t_img *dest, t_img *src);
-void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector pos);
+void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector
+					pos);
 void			clear_image_buffer(t_img *img, int color);
 
 // --- Bonus-Only Functions ---
