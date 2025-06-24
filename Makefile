@@ -107,7 +107,6 @@ fclean: clean
 	@printf "$(GREEN)Cleaning libraries, executable, and MiniLibX folder...$(RESET)\n"
 	@$(RM) -f $(NAME)
 	@$(MAKE) -s -C $(LIBFT_DIR) fclean
-	# ADDED: This line removes the entire minilibx directory
 	@$(RM) -rf $(MLX_DIR)
 	@printf "$(GREEN)✓ Final clean complete.\n$(RESET)"
 

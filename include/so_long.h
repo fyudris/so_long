@@ -1,20 +1,20 @@
 /* ************************************************************************** */
-/* */
-/* :::      ::::::::   */
-/* so_long.h                                          :+:      :+:    :+:   */
-/* +:+ +:+         +:+     */
-/* By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
-/* +#+#+#+#+#+   +#+           */
-/* Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/* Updated: 2025/06/23 15:30:00 by fyudris          ###   ########.fr       */
-/* */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   so_long.h                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
+/*   Updated: 2025/06/24 20:18:25 by fyudris          ###   ########.fr       */
+/*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SO_LONG_H
 # define SO_LONG_H
 
 /*============================================================================*/
-/* INCLUDES                                  */
+/* INCLUDES                                                                   */
 /*============================================================================*/
 
 # include <mlx.h>
@@ -22,34 +22,31 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include "libft.h" // Assuming libft.h is in the include path via -Ilibft
+# include "libft.h"
 # include "ft_printf.h"
 # include "get_next_line.h"
 
 /*============================================================================*/
-/* CONSTANTS                                  */
+/* CONSTANTS                                                                  */
 /*============================================================================*/
 
 // --- Game Style & Sizing ---
 # define ORIGINAL_TILE_SIZE 25
-# define SCALE_FACTOR 1.75 // Use integers or .0 for factors to avoid float issues
-# define TILE_SIZE (ORIGINAL_TILE_SIZE * SCALE_FACTOR)
-# define ANIMATION_SPEED 100
+# define SCALE_FACTOR 2.0
+# define TILE_SIZE 50
+# define ANIMATION_SPEED 25
 
-// --- Bonus-Only Constants ---
+// --- UI & Bonus Constants ---
 # ifdef BONUS_PART
+#  define UI_HEIGHT 60
 #  define BABA_WALK_FRAMES 12
-# define UI_HEIGHT 60
 # endif
 
 // --- Asset Paths ---
-// Mandatory assets
 # define BABA_PATH "./assets/characters/Baba.xpm"
 # define DOOR_PATH "./assets/statics/Door.xpm"
 # define KEY_PATH "./assets/statics/Key.xpm"
 # define FORT_PATH "./assets/tiles/Fort.xpm"
-
-// Bonus assets
 # ifdef BONUS_PART
 #  define ROCK_PATH "./assets/statics/Rock.xpm"
 #  define FONT_PATH "./assets/texts/Font.xpm"
@@ -70,20 +67,21 @@
 # define KEY_ESC 65307
 
 /*============================================================================*/
-/* DATA STRUCTURES                             */
+/* DATA STRUCTURES                                                            */
 /*============================================================================*/
 
-typedef enum	e_direction
-{ 
+typedef enum e_direction
+{
 	DOWN,
 	UP,
 	LEFT,
 	RIGHT
 }	t_direction;
+
 typedef struct s_vector
 {
-	int x;
-	int y;
+	int	x;
+	int	y;
 }	t_vector;
 
 typedef struct s_img
@@ -113,13 +111,14 @@ typedef struct s_animation
 }	t_animation;
 
 # ifdef BONUS_PART
+// --- Bonus Version of Structs ---
+
 typedef struct s_game_rules
 {
 	bool	key_is_activated;
 	bool	wall_is_pushable;
 	bool	rock_is_pushable;
 }	t_game_rules;
-# endif
 
 typedef struct s_textures
 {
@@ -130,7 +129,6 @@ typedef struct s_textures
 	t_animation	key;
 	t_animation	door;
 	t_animation	fort_wall;
-# ifdef BONUS_PART
 	t_animation	player_txt;
 	t_animation	wall;
 	t_animation	wall_txt;
@@ -148,7 +146,6 @@ typedef struct s_textures
 	t_animation	ui_x_icon;
 	t_animation	ui_digits[10];
 	t_vector	digit_coords[10];
-# endif
 }	t_textures;
 
 typedef struct s_data
@@ -164,15 +161,43 @@ typedef struct s_data
 	t_direction		player_dir;
 	int				anim_frame;
 	int				anim_timer;
-
-# ifdef BONUS_PART
 	t_game_rules	rules;
 	bool			is_moving;
-# endif
 }	t_data;
 
+# else
+// --- Mandatory Version of Structs ---
+
+typedef struct s_textures
+{
+	t_animation	player_down;
+	t_animation	player_up;
+	t_animation	player_left;
+	t_animation	player_right;
+	t_animation	key;
+	t_animation	door;
+	t_animation	fort_wall;
+}	t_textures;
+
+typedef struct s_data
+{
+	void			*mlx;
+	void			*win;
+	t_img			game_buffer;
+	t_map			map;
+	t_vector		player_pos;
+	int				move_count;
+	int				keys_collected;
+	t_textures		textures;
+	t_direction		player_dir;
+	int				anim_frame;
+	int				anim_timer;
+}	t_data;
+
+# endif
+
 /*============================================================================*/
-/* FUNCTION PROTOTYPES                           */
+/* FUNCTION PROTOTYPES                                                        */
 /*============================================================================*/
 
 // --- Shared Functions ---
@@ -186,20 +211,22 @@ void			load_all_textures(t_data *data);
 void			cleanup_and_exit(t_data *data, int status);
 int				handle_close_window(t_data *data);
 int				handle_keypress(int keycode, t_data *data);
+
 // Image utils
 unsigned int	get_pixel_from_img(t_img *img, int x, int y);
 void			put_pixel_to_img(t_img *img, int x, int y, unsigned int color);
 void			unpack_sprite(t_img *dest, t_img *src, t_vector pos);
 void			upscale_sprite(t_img *dest, t_img *src);
-void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite, t_vector
-					pos);
+void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite,
+					t_vector pos);
 void			clear_image_buffer(t_img *img, int color);
 
 // --- Bonus-Only Functions ---
 # ifdef BONUS_PART
-int		handle_keyrelease(int keycode, t_data *data);
-bool	handle_push(t_data *data, t_vector obj_pos);
-void	update_game_rules(t_data *data);
+
+int				handle_keyrelease(int keycode, t_data *data);
+bool			handle_push(t_data *data, t_vector obj_pos);
+void			update_game_rules(t_data *data);
 # endif
 
 #endif
