@@ -28,11 +28,12 @@ BONUS_FLAG      := -DBONUS_PART=1
 # === SOURCE FILES ===
 vpath %.c $(SRC_DIRS)
 
-SHARED_SRCS     := main.c parse_map.c validate_content.c \
-                   validate_path.c image.c
-MANDATORY_SRCS  := hooks.c textures.c memory.c render.c init.c
-BONUS_SRCS      := hooks_bonus.c textures_bonus.c logic.c memory_bonus.c \
-                   render_bonus.c init_bonus.c
+SHARED_SRCS     :=	main.c parse_map.c image.c
+MANDATORY_SRCS  :=	hooks.c textures.c memory.c render.c init.c \
+					validate_path.c validate_content.c
+BONUS_SRCS      :=	hooks_bonus.c textures_bonus.c logic.c memory_bonus.c \
+                	render_bonus.c init_bonus.c validate_path_bonus.c \
+					validate_content_bonus.c
 
 # === OBJECT FILES ===
 OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(SHARED_SRCS:.c=.o)) \

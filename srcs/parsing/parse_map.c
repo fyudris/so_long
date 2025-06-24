@@ -6,14 +6,14 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 02:54:15 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 01:48:58 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/24 20:33:18 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
  * @file parse_map.c
  * @brief Functions for parsing and validating the .ber map file.
- * 
+ *
  * @details This file orchestrates the process of reading a map file,
  * converting it from a file into a 2D array (grid), and then running
  * a series of validations to ensure it conforms to the project's rules.
@@ -25,7 +25,7 @@
 
 /**
  * @brief Reads the map from a file descriptor into a temporary linked list.
- * 
+ *
  * @details This function reads the map file line by line using `get_next_line`.
  * It uses the first line to determine the required width of the map.
  *
@@ -61,7 +61,7 @@ static void	read_map_to_list(int fd, t_list **map_list_head, t_data *data)
 
 /**
  * @brief Converts the linked list map into a 2D char array (grid).
- * 
+ *
  * @details It performs a crucial validation: it checks
  * if every line has the same length as the first one. If not, the map is
  * not rectangular, and the program exits with an error.
@@ -99,7 +99,7 @@ static void	convert_list_to_grid(t_list *head, t_data *data)
 
 /**
  * @brief Main entry point for the map parsing module.
- * 
+ *
  * @details This function orchestrates the entire map reading and validation
  * process in the correct order:
  * 1. Opens the specified file.
@@ -110,7 +110,7 @@ static void	convert_list_to_grid(t_list *head, t_data *data)
  * 6. Calls subsequent functions to validate the map's content (walls, items)
  * and ensure a valid path exists.
  *
- * @param filename The path to the `.ber` map file provided as a command-line 
+ * @param filename The path to the `.ber` map file provided as a command-line
  * argument.
  * @param data A pointer to the main game data struct to be populated.
  */

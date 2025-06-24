@@ -5,124 +5,106 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 13:49:49 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/17 14:17:39 by fyudris          ###   ########.fr       */
+/*   Created: 2025/06/24 20:46:54 by fyudris           #+#    #+#             */
+/*   Updated: 2025/06/24 20:47:21 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+/**
+ * @file validate_path.c
+ * @brief Validates if a map has a solvable path (Mandatory).
+ */
+
 #include "../../include/so_long.h"
 
-/**
- * @brief Creates a deep copy of the map grid.
- * 
- * A deep copy is necessary so the flood fill algorithm can modify the map
- * (by marking visited tiles) without destroying the original map data needed
- * for rendering the game.
- * 
- * @param data A pointer to the main game data struct.
- * @return A new char** which is a copy of the map grid.
- */
-static char	**copy_map_grid(t_data *data)
-{
-	char	**grid_copy;
-	int		i;
-
-	grid_copy = malloc(sizeof(char *) * (data->map.size.y + 1));
-	if (!grid_copy)
-		ft_print_error("Memory allocation failed for map copy.");
-	i = 0;
-	while (i < data->map.size.y)
-	{
-		grid_copy[i] = ft_strdup(data->map.grid[i]);
-		if (!grid_copy[i])
-		{
-			while (--i >= 0)
-				free(grid_copy[i]);
-			free(grid_copy);
-			ft_print_error("Memory allocation failed for map copy line.");
-		}
-		i++;
-	}
-	grid_copy[i] = NULL;
-	return (grid_copy);
-}
+static void	flood_fill(char **grid, t_vector size, int x, int y);
+static void	check_fill_results(char **original_grid, char **filled_grid,
+				t_vector size);
+static char	**duplicate_grid(char **original_grid, t_vector size);
+static void	free_grid(char **grid, int height);
 
 /**
- * @brief The recursive flood fill algorithm.
- * 
- * This function "fills" an area starting from (x,y). It marks the current
- * tiles as visited ('F') and then recursively calls itself for adjacent tiles.
- * The recursion stops when it hits a wall ('1') or an already-filled tile ('F').
- * 
- * @param map_copy The copy of the map grid to be filled.
- * @param size The dimensions of the map.
- * @param pos The current (x, y) coordinates to fill
- */
-static void	flood_fill(char **map_copy, t_vector size, t_vector pos)
-{
-	// Base Cases: Stop if we are out of bounds or at the an impassabletile
-	// Fort wall ('1').Movable objects like 'W', 'D', 'R', etc.,
-	// should be treated as empty space for this initial check.
-	if (pos.y < 0 || pos.y >= size.y || pos.x < 0 || pos.x >= size.x ||
-		map_copy[pos.y][pos.x] == '1' ||
-		map_copy[pos.y][pos.x] == 'F')
-		return ;
-	map_copy[pos.y][pos.x] = 'F';
-	flood_fill(map_copy, size, (t_vector){pos.x, pos.y + 1});
-	flood_fill(map_copy, size, (t_vector){pos.x, pos.y - 1});
-	flood_fill(map_copy, size, (t_vector){pos.x + 1, pos.y});
-	flood_fill(map_copy, size, (t_vector){pos.x - 1, pos.y});
-}
-
-/**
- * @brief Checks if all collectibles and the exit were reached by flood fill.
- * 
- * After the flood fill is complete, this function iterates through the original
- * map. For every 'C' and 'E', it checks if the corresponding tile in the
- * copied map was marked as 'F' (Filled). If any were not, it means there is
- * no valid path.
- * 
- * @param data A pointer to the main game data struct.
- * @param map_copy The filled copy of the map grid.
- */
-static void	check_path(t_data *data, char **map_copy)
-{
-	int	x;
-	int	y;
-	int	i;
-	
-	y = 0;
-	while (y < data->map.size.y)
-	{
-		x = 0;
-		while (x < data->map.size.x)
-		{
-			if ((data->map.grid[y][x] == 'C' || data->map.grid[y][x] == 'E') &&
-				map_copy[y][x] != 'F')
-					ft_print_error("No valid path to all collectibles or the exit.");
-				x++;
-		}
-		y++;
-	}
-	i = 0;
-	while (i < data->map.size.y)
-		free(map_copy[i++]);
-	free(map_copy);
-}
-
-/**
- * @brief Validates that a path exists from the player to all items.
- * 
- * This is the main orchestrator for the path validation step. It copies the
- * map, runs the flood fill from the player's start, and then checks the result.
- * 
- * @param data A pointer to the main game data struct.
+ * @brief Main function to validate the mandatory map's path.
  */
 void	validate_path(t_data *data)
 {
-	char	**map_copy;
+	char	**grid_copy;
 
-	map_copy = copy_map_grid(data);
-	flood_fill(map_copy, data->map.size, data->player_pos);
-	check_path(data, map_copy);
+	grid_copy = duplicate_grid(data->map.grid, data->map.size);
+	flood_fill(grid_copy, data->map.size, data->player_pos.x,
+		data->player_pos.y);
+	check_fill_results(data->map.grid, grid_copy, data->map.size);
+	free_grid(grid_copy, data->map.size.y);
+}
+
+/**
+ * @brief Simple flood-fill that stops only at walls ('1').
+ */
+static void	flood_fill(char **grid, t_vector size, int x, int y)
+{
+	if (x < 0 || x >= size.x || y < 0 || y >= size.y
+		|| grid[y][x] == '1' || grid[y][x] == 'F')
+		return ;
+	grid[y][x] = 'F';
+	flood_fill(grid, size, x + 1, y);
+	flood_fill(grid, size, x - 1, y);
+	flood_fill(grid, size, x, y + 1);
+	flood_fill(grid, size, x, y - 1);
+}
+
+
+static void	check_fill_results(char **original_grid, char **filled_grid,
+		t_vector size)
+{
+	int	x;
+	int	y;
+
+	y = 0;
+	while (y < size.y)
+	{
+		x = 0;
+		while (x < size.x)
+		{
+			if ((original_grid[y][x] == 'C' || original_grid[y][x] == 'E')
+				&& filled_grid[y][x] != 'F')
+				ft_print_error("Invalid path: Not all items are reachable.");
+			x++;
+		}
+		y++;
+	}
+}
+
+static char	**duplicate_grid(char **original_grid, t_vector size)
+{
+	char	**copy;
+	int		i;
+
+	copy = malloc(sizeof(char *) * size.y);
+	if (!copy)
+		ft_print_error("Malloc failed during path validation.");
+	i = 0;
+	while (i < size.y)
+	{
+		copy[i] = ft_strdup(original_grid[i]);
+		if (!copy[i])
+		{
+			free_grid(copy, i);
+			ft_print_error("Malloc failed during path validation.");
+		}
+		i++;
+	}
+	return (copy);
+}
+
+static void	free_grid(char **grid, int height)
+{
+	int	i;
+
+	i = 0;
+	while (i < height)
+	{
+		free(grid[i]);
+		i++;
+	}
+	free(grid);
 }
