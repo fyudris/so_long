@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 02:54:15 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 20:33:18 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:36 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@
  * allocating the final memory block for the grid.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Reads the map from a file descriptor into a temporary linked list.

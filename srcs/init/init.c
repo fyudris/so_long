@@ -6,25 +6,29 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 16:16:30 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 00:58:40 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 19:33:27 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
  * @file init.c
- * 
+ *
  * @brief Initialization functions for the so_long game.
- 
+
  * @details This file contains the core functions responsible for setting up
  * the game's initial state, including the main data structure and the
  * connection to the MiniLibX graphical server. This is the MANDATORY
  * version, which does not include a graphical UI bar.
  */
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Initializes the main game data structure.
- * 
+ *
  * @details This function takes the primary `t_data` struct and sets all its
  * members to a default state of zero (0, NULL, or false) using `ft_bzero`.
  * It also sets the player's initial facing direction to RIGHT.
@@ -35,12 +39,13 @@ void	init_game_data(t_data *data)
 {
 	ft_bzero(data, sizeof(t_data));
 	data->player_dir = RIGHT;
+	data->last_time = 0;
 }
 
 /**
  * @brief Establishes a connection to the graphical server and creates the game
  * window.
- * 
+ *
  * @details This function performs several critical setup steps:
  * 	1. Calls `mlx_init()` to establish a connection with the display server.
  * 	2. Calculates the required window dimensions based on the map's grid size

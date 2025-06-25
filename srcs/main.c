@@ -6,11 +6,15 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:33:00 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 00:47:42 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:28:50 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief The main entry point of the so_long program.
@@ -52,7 +56,7 @@ int	main(int argc, char **argv)
 
 /**
  * @brief Helper function to print map grid on the console
- * 
+ *
  */
 // static void	print_map(t_data *data)
 // {

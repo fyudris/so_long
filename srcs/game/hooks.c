@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:25:21 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 15:38:32 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:57 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@
  * game logic for player movement in the mandatory version.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 static void	process_move(t_data *data, t_vector next_pos);
 static void	perform_move(t_data *data, t_vector next_pos);
@@ -92,7 +96,7 @@ static void	perform_move(t_data *data, t_vector next_pos)
 
 /**
  * @brief Handles all keyboard press events.
- * 
+ *
  * @details This function is the main entry point for user movement. It checks
  * for the ESC key to exit the game. For movement keys (W, A, S, D), it
  * calculates the player's potential next position and then calls

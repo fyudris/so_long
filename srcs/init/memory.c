@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:34:08 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 01:06:36 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:42 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,19 @@
  * MLX images, window/display pointers, and the map grid. This is the
  * MANDATORY version, which only handles the assets required by the subject.
  */
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Frees all memory associated with a single animation sequence.
- * 
+ *
  * @details This is a helper function that iterates through each frame of a
  * `t_animation` struct. For each frame, it calls `mlx_destroy_image`
  * to release the memory managed by the MiniLibX library. After all
- * image pointers are destroyed, it frees the `anim->frames` array itself. 
+ * image pointers are destroyed, it frees the `anim->frames` array itself.
  *
  * @param data A pointer to the main `t_data` struct
  * @param anim A pointer to the `t_animation` struct to be freed
@@ -50,7 +54,7 @@ static void	free_animation(t_data *data, t_animation *anim)
 
 /**
  * @brief Frees the memory allocated for the 2D map grid.
- * 
+ *
  * @details The map grid is a `char **` (an array of strings). This function
  * iterates through each row of the array, freeing each individual string
  * (each `char *`). After all rows are freed, it frees the top-level
@@ -79,7 +83,7 @@ static void	free_map_grid(t_map *map)
 /**
  * @brief The centralized cleanup function to free all allocated memory and
  * exit.
- * 
+ *
  * @details This function is the single point of exit for the program, ensuring
  * that all allocated resources are released in the correct order to prevent
  * memory leaks. It is called when the game ends, the window is closed,

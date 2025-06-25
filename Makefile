@@ -7,12 +7,15 @@ RM              := rm -f
 MKDIR           := /bin/mkdir -p
 
 # === DIRECTORIES ===
+# Object file directories
 OBJ_DIR_MAND    := obj/mandatory
 OBJ_DIR_BONUS   := obj/bonus
+# Library & Include directories
 LIBFT_DIR       := libft
 MLX_DIR         := minilibx
 INC_DIR         := include
-SRC_DIRS        := srcs srcs/init srcs/parsing srcs/game srcs/rendering
+# Source directories for vpath
+SRC_DIRS        := srcs srcs/init srcs/parsing srcs/game srcs/rendering srcs/utils
 
 # === LIBRARIES ===
 LIBFT           := $(LIBFT_DIR)/libft.a
@@ -26,21 +29,26 @@ LDLIBS          := -lft -lmlx -lXext -lX11 -lm -lz
 BONUS_FLAG      := -DBONUS_PART=1
 
 # === SOURCE FILES ===
+# Use vpath to tell 'make' where to find source files
 vpath %.c $(SRC_DIRS)
 
-SHARED_SRCS     :=	main.c parse_map.c image.c
-MANDATORY_SRCS  :=	hooks.c textures.c memory.c render.c init.c \
-					validate_path.c validate_content.c
-BONUS_SRCS      :=	hooks_bonus.c textures_bonus.c logic.c memory_bonus.c \
-                	render_bonus.c init_bonus.c validate_path_bonus.c \
-					validate_content_bonus.c
+MANDATORY_SRCS  := main.c image.c image_utils.c time.c \
+                   init.c memory.c parse_map.c validate_content.c \
+                   validate_path.c hooks.c render.c textures.c
+
+BONUS_SRCS      := main.c image.c image_utils.c time.c \
+                   init_bonus.c memory_bonus.c parse_map.c \
+                   validate_content_bonus.c validate_path_bonus.c \
+                   hooks_bonus.c render_bonus.c textures_bonus.c logic.c \
+                   hooks_utils_bonus.c render_utils_bonus.c \
+                   textures_utils_bonus.c render_ui_bonus.c
 
 # === OBJECT FILES ===
-OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(SHARED_SRCS:.c=.o)) \
-                   $(addprefix $(OBJ_DIR_MAND)/, $(MANDATORY_SRCS:.c=.o))
-OBJS_BONUS      := $(addprefix $(OBJ_DIR_BONUS)/, $(SHARED_SRCS:.c=.o)) \
-                   $(addprefix $(OBJ_DIR_BONUS)/, $(BONUS_SRCS:.c=.o))
+# Create separate object lists for each target
+OBJS_MANDATORY  := $(addprefix $(OBJ_DIR_MAND)/, $(MANDATORY_SRCS:.c=.o))
+OBJS_BONUS      := $(addprefix $(OBJ_DIR_BONUS)/, $(BONUS_SRCS:.c=.o))
 
+# Dependency files for header changes
 DEPS            := $(OBJS_MANDATORY:.o=.d) $(OBJS_BONUS:.o=.d)
 
 # --- COLORS ---

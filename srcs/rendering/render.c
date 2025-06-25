@@ -6,48 +6,70 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:37:51 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 15:37:52 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 20:01:13 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
-static t_animation	*get_tile_animation(t_data *data, char tile_type);
-static t_animation	*get_current_player_anim(t_data *data);
+static void			draw_frame_content(t_data *data);
 static void			draw_map_to_buffer(t_data *data);
+static void			draw_player(t_data *data);
+static t_animation	*get_tile_animation(t_data *data, char tile_type);
 
 /**
- * @brief The main rendering function for the mandatory part.
+ * @brief The main rendering loop hook, responsible for timing and framerate.
+ * @details This function is called on every loop by MiniLibX. It uses a
+ * frame limiter to ensure the game runs at a consistent ~60 FPS, which
+ * prevents high CPU usage. If enough time has passed since the last
+ * frame, it calls a helper function to draw the actual frame content.
+ *
+ * @param data A pointer to the main game data struct.
+ * @return int Always returns 0.
  */
 int	render_frame(t_data *data)
 {
-	t_animation	*player_anim;
+	long	current_time;
+	long	time_diff;
 
-	// Update animation timers for simple sprite effects
+	current_time = get_time_in_usec();
+	if (data->last_time == 0)
+		data->last_time = current_time;
+	time_diff = current_time - data->last_time;
+	if (time_diff < FRAME_DURATION)
+		return (0);
+	draw_frame_content(data);
+	data->last_time = current_time;
+	return (0);
+}
+
+/**
+ * @brief Draws all content for a single frame.
+ * @details This helper function contains the actual rendering logic. It updates
+ * animation timers, clears the back buffer, and draws the map and player
+ * before pushing the final image to the window.
+ */
+static void	draw_frame_content(t_data *data)
+{
 	data->anim_timer++;
 	if (data->anim_timer >= ANIMATION_SPEED)
 	{
 		data->anim_timer = 0;
 		data->anim_frame++;
 	}
-	// Clear the back buffer to prevent after-images
 	clear_image_buffer(&data->game_buffer, 0x000000);
-	// Draw the map and player to the buffer
 	draw_map_to_buffer(data);
-	player_anim = get_current_player_anim(data);
-	if (player_anim && player_anim->frames)
-	{
-		// Mandatory player has no complex animation, always draw frame 0
-		draw_sprite_to_buffer(&data->game_buffer,
-			&player_anim->frames[0],
-			(t_vector){data->player_pos.x * TILE_SIZE,
-			data->player_pos.y * TILE_SIZE});
-	}
-	// Push the completed game buffer to the window in ONE call
+	draw_player(data);
 	mlx_put_image_to_window(data->mlx, data->win, data->game_buffer.ptr, 0, 0);
-	return (0);
 }
 
+/**
+ * @brief Draws all map tiles to the off-screen buffer.
+ */
 static void	draw_map_to_buffer(t_data *data)
 {
 	int			x;
@@ -71,7 +93,30 @@ static void	draw_map_to_buffer(t_data *data)
 }
 
 /**
- * @brief Returns the animation for mandatory map characters.
+ * @brief Draws the player sprite to the off-screen buffer.
+ */
+static void	draw_player(t_data *data)
+{
+	t_animation	*player_anim;
+
+	if (data->player_dir == UP)
+		player_anim = &data->textures.player_up;
+	else if (data->player_dir == DOWN)
+		player_anim = &data->textures.player_down;
+	else if (data->player_dir == LEFT)
+		player_anim = &data->textures.player_left;
+	else
+		player_anim = &data->textures.player_right;
+	if (player_anim && player_anim->frames)
+	{
+		draw_sprite_to_buffer(&data->game_buffer, &player_anim->frames[0],
+			(t_vector){data->player_pos.x * TILE_SIZE,
+			data->player_pos.y * TILE_SIZE});
+	}
+}
+
+/**
+ * @brief Returns the animation struct for a given mandatory map character.
  */
 static t_animation	*get_tile_animation(t_data *data, char tile_type)
 {
@@ -82,20 +127,4 @@ static t_animation	*get_tile_animation(t_data *data, char tile_type)
 	if (tile_type == 'E')
 		return (&data->textures.door);
 	return (NULL);
-}
-
-/**
- * @brief Selects the correct player animation sequence based on direction.
- */
-static t_animation	*get_current_player_anim(t_data *data)
-{
-	if (data->player_dir == UP)
-		return (&data->textures.player_up);
-	if (data->player_dir == DOWN)
-		return (&data->textures.player_down);
-	if (data->player_dir == LEFT)
-		return (&data->textures.player_left);
-	if (data->player_dir == RIGHT)
-		return (&data->textures.player_right);
-	return (&data->textures.player_right);
 }

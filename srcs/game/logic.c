@@ -6,13 +6,34 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/19 15:23:22 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 16:47:27 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:53 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 static void	set_rule(t_data *data, char noun, char property);
+
+/**
+ * @brief Checks if a tile represents a pushable object based on active rules.
+ * @details This function is now public and lives here with handle_push, as
+ * they are both part of the core push mechanic.
+ * @return `true` if the object can be pushed, `false` otherwise.
+ */
+bool	is_pushable(t_data *data, char tile)
+{
+	if (ft_strchr("pcewrynisuo", tile))
+		return (true);
+	if (tile == 'W' && data->rules.wall_is_pushable == true)
+		return (true);
+	if (tile == 'R' && data->rules.rock_is_pushable == true)
+		return (true);
+	return (false);
+}
 
 /**
  * @brief Checks for a 3-block sentence at a given coordinate.

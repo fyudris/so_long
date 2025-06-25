@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hooks_util_bonus.c                                 :+:      :+:    :+:   */
+/*   hooks_utils_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 16:39:52 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 16:44:18 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:31:00 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,11 @@
  * to keep the main hook file clean and compliant with the Norm.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Updates the player's direction based on the key pressed.

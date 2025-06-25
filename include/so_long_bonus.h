@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   so_long.h                                          :+:      :+:    :+:   */
+/*   so_long_bonus.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 19:57:51 by fyudris          ###   ########.fr       */
+/*   Created: 2025/06/25 18:11:24 by fyudris           #+#    #+#             */
+/*   Updated: 2025/06/25 19:58:26 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef SO_LONG_H
-# define SO_LONG_H
+#ifndef SO_LONG_BONUS_H
+# define SO_LONG_BONUS_H
 
 /* ========================================================================== */
 /* INCLUDES                                                                   */
@@ -21,7 +21,7 @@
 # include <stdlib.h>
 # include <fcntl.h>
 # include <unistd.h>
-# include <sys/time.h>
+# include <sys/time.h> // Required for gettimeofday
 # include "../libft/includes/libft.h"
 # include "../libft/includes/get_next_line.h"
 # include "../libft/includes/ft_printf.h"
@@ -29,17 +29,27 @@
 /* ========================================================================== */
 /* CONSTANTS                                                                  */
 /* ========================================================================== */
-
 // --- Game Style & Sizing ---
-# define FRAME_DURATION 16666
+# define FRAME_DURATION 16666 //Time per frame in microseconds for ~60 FPS
 # define ORIGINAL_TILE_SIZE 25
 # define SCALE_FACTOR 2.0
 # define TILE_SIZE 50
-# define ANIMATION_SPEED 50
+# define ANIMATION_SPEED 20
+# define UI_HEIGHT 60
+# define BABA_WALK_FRAMES 12
 # define BABA_PATH "./assets/characters/Baba.xpm"
 # define DOOR_PATH "./assets/statics/Door.xpm"
 # define KEY_PATH "./assets/statics/Key.xpm"
 # define FORT_PATH "./assets/tiles/Fort.xpm"
+# define ROCK_PATH "./assets/statics/Rock.xpm"
+# define FONT_PATH "./assets/texts/Font.xpm"
+# define IS_PATH "./assets/texts/Is-Text.xpm"
+# define MOVE_PATH "./assets/texts/Move-Text.xpm"
+# define OPEN_PATH "./assets/texts/Open-Text.xpm"
+# define PUSH_PATH "./assets/texts/Push-Text.xpm"
+# define WIN_PATH "./assets/texts/Win-Text.xpm"
+# define YOU_PATH "./assets/texts/You-Text.xpm"
+# define WALL_PATH "./assets/tiles/Wall.xpm"
 # define KEY_W 119
 # define KEY_A 97
 # define KEY_S 115
@@ -84,6 +94,18 @@ typedef struct s_animation {
 	int		frame_count;
 }	t_animation;
 
+typedef struct s_anim_info {
+	char		*path;
+	int			frame_count;
+	t_vector	start_pos;
+}	t_anim_info;
+
+typedef struct s_game_rules {
+	bool	key_is_activated;
+	bool	wall_is_pushable;
+	bool	rock_is_pushable;
+}	t_game_rules;
+
 typedef struct s_textures
 {
 	t_animation	player_down;
@@ -93,6 +115,23 @@ typedef struct s_textures
 	t_animation	key;
 	t_animation	door;
 	t_animation	fort_wall;
+	t_animation	player_txt;
+	t_animation	wall;
+	t_animation	wall_txt;
+	t_animation	key_txt;
+	t_animation	door_txt;
+	t_animation	rock;
+	t_animation	rock_txt;
+	t_animation	you_txt;
+	t_animation	open_txt;
+	t_animation	push_txt;
+	t_animation	win_txt;
+	t_animation	is_txt;
+	t_animation	ui_move_icon;
+	t_animation	ui_key_icon;
+	t_animation	ui_x_icon;
+	t_animation	ui_digits[10];
+	t_vector	digit_coords[10];
 }	t_textures;
 
 typedef struct s_data
@@ -108,6 +147,8 @@ typedef struct s_data
 	t_direction		player_dir;
 	int				anim_frame;
 	int				anim_timer;
+	t_game_rules	rules;
+	bool			is_moving;
 	long			last_time;
 }	t_data;
 
@@ -131,6 +172,24 @@ void			upscale_sprite(t_img *dest, t_img *src);
 void			draw_sprite_to_buffer(t_img *buffer, t_img *sprite,
 					t_vector pos);
 void			clear_image_buffer(t_img *img, int color);
+int				handle_keyrelease(int keycode, t_data *data);
+bool			handle_push(t_data *data, t_vector obj_pos);
+void			update_game_rules(t_data *data);
+void			draw_number(t_data *data, int n, t_vector pos);
+t_animation		*get_object_anim(t_data *data, char tile_type);
+bool			is_pushable(t_data *data, char tile);
+void			process_one_frame(t_data *data, t_img *final_img, t_img *sheet,
+					t_vector pos);
+void			load_animation(t_data *data, t_animation *anim,
+					t_anim_info info);
+void			load_baba_animation(t_data *data, t_animation *anim,
+					char *path, int start_col);
+void			update_player_direction(int keycode, t_data *data);
+bool			check_collisions(t_data *data, t_vector next_pos);
+bool			process_interactions(t_data *data, t_vector next_pos);
+void			finalize_move(t_data *data, t_vector next_pos);
 long			get_time_in_usec(void);
-
+void			draw_ui_left(t_data *data);
+void			draw_ui_right(t_data *data);
+void			draw_number(t_data *data, int n, t_vector pos);
 #endif

@@ -6,11 +6,15 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:10 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 01:01:25 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 19:33:33 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Initializes the entire data struct to zeros (0, NULL, false).
@@ -19,6 +23,7 @@
 void	init_game_data(t_data *data)
 {
 	ft_bzero(data, sizeof(t_data));
+	data->last_time = 0;
 }
 
 /**

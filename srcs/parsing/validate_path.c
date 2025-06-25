@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 20:46:54 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 20:47:21 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:20 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,11 @@
  * @brief Validates if a map has a solvable path (Mandatory).
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 static void	flood_fill(char **grid, t_vector size, int x, int y);
 static void	check_fill_results(char **original_grid, char **filled_grid,

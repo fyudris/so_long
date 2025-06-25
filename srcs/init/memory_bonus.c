@@ -6,24 +6,28 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 20:45:29 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 01:16:27 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:44 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /**
  * @file memory_bonus.c
  * @brief Memory management functions for the BONUS version of so_long.
- * 
+ *
  * @details This file is responsible for safely freeing all dynamically
  * allocated memory for the full-featured bonus version of the game.
  * It handles all assets, including UI elements and text-block sprites.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 /**
  * @brief Frees all memory associated with a single animation sequence.
- * 
+ *
  * @details This is a helper function that iterates through each frame of a
  * `t_animation` struct. For each frame, it calls `mlx_destroy_image`
  * to release the memory managed by the MiniLibX library. After all
@@ -51,7 +55,7 @@ static void	free_animation(t_data *data, t_animation *anim)
 
 /**
  * @brief Frees the memory allocated for the 2D map grid.
- * 
+ *
  * @details Iterates through the `char **` grid, freeing each row string
  * before freeing the top-level array.
  *
@@ -76,11 +80,11 @@ static void	free_map_grid(t_map *map)
 
 /**
  * @brief Frees all textures related to game objects and text blocks.
- * 
+ *
  * @details This helper function is called by `cleanup_and_exit` to handle
  * freeing the large number of bonus-specific sprite animations, keeping
  * the main cleanup function within the 25-line limit.
- * 
+ *
  * @param data A pointer to the main `t_data` struct.
  */
 static void	free_game_textures(t_data *data)
@@ -101,10 +105,10 @@ static void	free_game_textures(t_data *data)
 
 /**
  * @brief Frees all textures related to the graphical user interface (UI).
- * 
+ *
  * @details This helper is called by `cleanup_and_exit` to handle freeing
  * the UI icons and the array of digit sprites.
- * 
+ *
  * @param data A pointer to the main `t_data` struct.
  */
 static void	free_ui_textures(t_data *data)
@@ -121,10 +125,10 @@ static void	free_ui_textures(t_data *data)
 
 /**
  * @brief The centralized cleanup function for the BONUS version.
- * 
+ *
  * @details This function is the single point of exit for the program, ensuring
  * that all allocated resources are released in the correct order to prevent
- * memory leaks. 
+ * memory leaks.
  *
  * @param data A pointer to the main `t_data` struct containing all resources.
  * @param status The exit code to be returned to the shell (0 for success).

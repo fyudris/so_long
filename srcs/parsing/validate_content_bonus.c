@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   validate_content.c                                 :+:      :+:    :+:   */
+/*   validate_content_bonus.c                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 12:26:47 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 20:35:34 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:34 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,11 @@
  * correct number of players, exits, and collectibles for the bonus version.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 static void	check_walls_bonus(t_data *data);
 static void	count_components_bonus(t_data *data);

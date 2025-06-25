@@ -6,11 +6,15 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:27:31 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/23 15:47:44 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:28:56 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 // Forward declarations for static helpers
 static void	process_one_frame(t_data *data, t_img *final_img,
@@ -25,7 +29,8 @@ static void	load_player_anims_mandatory(t_data *data);
 void	load_all_textures(t_data *data)
 {
 	load_player_anims_mandatory(data);
-	load_animation(data, &data->textures.fort_wall, FORT_PATH, (t_vector){50, 0});
+	load_animation(data, &data->textures.fort_wall, FORT_PATH,
+		(t_vector){50, 0});
 	load_animation(data, &data->textures.key, KEY_PATH, (t_vector){100, 0});
 	load_animation(data, &data->textures.door, DOOR_PATH, (t_vector){100, 0});
 }
@@ -36,12 +41,14 @@ void	load_all_textures(t_data *data)
  */
 static void	load_player_anims_mandatory(t_data *data)
 {
-	// These start positions correspond to the first frame of each direction
-	// in your Baba.xpm spritesheet.
-	load_animation(data, &data->textures.player_right, BABA_PATH, (t_vector){25, 0});
-	load_animation(data, &data->textures.player_up, BABA_PATH, (t_vector){125, 0});
-	load_animation(data, &data->textures.player_left, BABA_PATH, (t_vector){225, 0});
-	load_animation(data, &data->textures.player_down, BABA_PATH, (t_vector){325, 0});
+	load_animation(data, &data->textures.player_right, BABA_PATH,
+		(t_vector){25, 0});
+	load_animation(data, &data->textures.player_up, BABA_PATH,
+		(t_vector){125, 0});
+	load_animation(data, &data->textures.player_left, BABA_PATH,
+		(t_vector){225, 0});
+	load_animation(data, &data->textures.player_down, BABA_PATH,
+		(t_vector){325, 0});
 }
 
 /**

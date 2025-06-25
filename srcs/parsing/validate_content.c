@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/24 20:45:23 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/24 20:49:20 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 18:30:29 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,11 @@
  * correct number of players, exits, and collectibles.
  */
 
-#include "../../include/so_long.h"
+#ifdef BONUS_PART
+# include "../../include/so_long_bonus.h"
+#else
+# include "../../include/so_long.h"
+#endif
 
 static void	check_walls(t_data *data);
 static void	count_components(t_data *data);
