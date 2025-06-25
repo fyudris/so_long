@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:10 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 19:33:33 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 22:13:41 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ void	init_game_data(t_data *data)
 {
 	ft_bzero(data, sizeof(t_data));
 	data->last_time = 0;
+	data->last_anim_time = 0;
 }
 
 /**

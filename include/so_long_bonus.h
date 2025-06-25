@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 18:11:24 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 22:05:26 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 22:13:17 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,11 @@
 /* ========================================================================== */
 // --- Game Style & Sizing ---
 # define FRAME_DURATION 16666 // Time per frame in microseconds for ~60 FPS
+# define ANIM_FRAME_DURATION 80000 // Time per anim frame in microsec. (~12 FPS)
+# define ANIMATION_SPEED 10
 # define ORIGINAL_TILE_SIZE 25
 # define SCALE_FACTOR 2.0
 # define TILE_SIZE 50
-# define ANIMATION_SPEED 20
 # define UI_HEIGHT 60
 # define BABA_WALK_FRAMES 12
 
@@ -195,10 +196,10 @@ typedef struct s_data
 	t_textures		textures;
 	t_direction		player_dir;
 	int				anim_frame;
-	int				anim_timer;
 	t_game_rules	rules;
 	bool			is_moving;
 	long			last_time;
+	long			last_anim_time;
 }	t_data;
 
 /* ========================================================================== */

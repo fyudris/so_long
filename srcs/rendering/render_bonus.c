@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 01:09:33 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 20:00:54 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 22:17:18 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,8 @@ static void	draw_player_bonus(t_data *data);
 static void	draw_ui_bonus(t_data *data);
 
 /**
- * @brief The main rendering loop hook for the bonus version.
+ * @brief The main rendering loop hook for the bonus version
+ * (with frame limiter).
  */
 int	render_frame(t_data *data)
 {
@@ -52,11 +53,17 @@ int	render_frame(t_data *data)
  */
 static void	draw_frame_content_bonus(t_data *data)
 {
-	data->anim_timer++;
-	if (data->anim_timer >= ANIMATION_SPEED)
+	long	current_time;
+	long	anim_time_diff;
+
+	current_time = get_time_in_usec();
+	if (data->last_anim_time == 0)
+		data->last_anim_time = current_time;
+	anim_time_diff = current_time - data->last_anim_time;
+	if (anim_time_diff > ANIM_FRAME_DURATION)
 	{
-		data->anim_timer = 0;
 		data->anim_frame++;
+		data->last_anim_time = current_time;
 	}
 	clear_image_buffer(&data->game_buffer, 0x000000);
 	draw_map_to_buffer_bonus(data);
