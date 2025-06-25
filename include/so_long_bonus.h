@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 18:11:24 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 21:02:55 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 22:05:26 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -251,5 +251,5 @@ long			get_time_in_usec(void);
 void			draw_ui_left(t_data *data);
 void			draw_ui_right(t_data *data);
 void			draw_number(t_data *data, int n, t_vector pos);
-
+t_animation		*get_object_anim(t_data *data, char tile_type);
 #endif

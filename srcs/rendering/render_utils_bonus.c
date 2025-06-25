@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 17:04:09 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 19:47:33 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 22:01:29 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,7 @@
  * @file render_utils_bonus.c
  * @brief Utility functions for the bonus rendering engine.
  * @details This file contains helper functions that are called by the main
- * render loop. Separating them here keeps the main file compliant with
- * the 5-function limit of the Norm.
+ * render loop.
  */
 
 #ifdef BONUS_PART
