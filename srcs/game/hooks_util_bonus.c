@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   hooks_bonus.c                                      :+:      :+:    :+:   */
+/*   hooks_util_bonus.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 01:10:08 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 16:44:53 by fyudris          ###   ########.fr       */
+/*   Created: 2025/06/25 16:39:52 by fyudris           #+#    #+#             */
+/*   Updated: 2025/06/25 16:44:18 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,24 +20,7 @@
 #include "../../include/so_long.h"
 
 /**
- * @brief Checks if a tile represents a pushable object.
- * @details This function is used by both collision checking and the main
- * push handler, so it is defined here as a shared utility.
- * @return `true` if the object can be pushed, `false` otherwise.
- */
-bool	is_pushable(t_data *data, char tile)
-{
-	if (ft_strchr("pcewrynisuo", tile))
-		return (true);
-	if (tile == 'W' && data->rules.wall_is_pushable == true)
-		return (true);
-	if (tile == 'R' && data->rules.rock_is_pushable == true)
-		return (true);
-	return (false);
-}
-
-/**
- * @brief Updates the player's direction and movement state based on input.
+ * @brief Updates the player's direction based on the key pressed.
  */
 void	update_player_direction(int keycode, t_data *data)
 {
@@ -98,6 +81,8 @@ bool	process_interactions(t_data *data, t_vector next_pos)
 	{
 		data->keys_collected++;
 		data->map.grid[next_pos.y][next_pos.x] = '0';
+		ft_printf("Key collected! Total: %d of %d\n",
+			data->keys_collected, data->map.collectibles);
 	}
 	return (false);
 }
