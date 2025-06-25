@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/12 17:44:57 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 20:45:11 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 21:03:18 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,8 @@
  * @enum e_direction
  * @brief Represents the four cardinal directions the player can face.
  */
-typedef enum e_direction {
+typedef enum e_direction
+{
 	DOWN,
 	UP,
 	LEFT,
@@ -85,7 +86,8 @@ typedef enum e_direction {
  * @struct s_vector
  * @brief A generic structure to hold 2D integer coordinates (x, y).
  */
-typedef struct s_vector {
+typedef struct s_vector
+{
 	int	x;
 	int	y;
 }	t_vector;
@@ -101,7 +103,8 @@ typedef struct s_vector {
  * @param line_len The number of bytes in one horizontal line of the image.
  * @param endian The endianness of the image data.
  */
-typedef struct s_img {
+typedef struct s_img
+{
 	void	*ptr;
 	void	*addr;
 	int		width;
@@ -120,7 +123,8 @@ typedef struct s_img {
  * @param players The count of player start positions ('P').
  * @param exits The count of map exits ('E').
  */
-typedef struct s_map {
+typedef struct s_map
+{
 	char		**grid;
 	t_vector	size;
 	int			collectibles;
@@ -134,7 +138,8 @@ typedef struct s_map {
  * @param frames A dynamically allocated array of `t_img` structs.
  * @param frame_count The total number of frames in the animation.
  */
-typedef struct s_animation {
+typedef struct s_animation
+{
 	t_img	*frames;
 	int		frame_count;
 }	t_animation;

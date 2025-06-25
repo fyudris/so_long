@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:37:51 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 20:01:13 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 21:14:19 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static t_animation	*get_tile_animation(t_data *data, char tile_type);
 
 /**
  * @brief The main rendering loop hook, responsible for timing and framerate.
+ * 
  * @details This function is called on every loop by MiniLibX. It uses a
  * frame limiter to ensure the game runs at a consistent ~60 FPS, which
  * prevents high CPU usage. If enough time has passed since the last

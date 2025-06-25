@@ -6,7 +6,7 @@
 /*   By: fyudris <fyudris@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:44:04 by fyudris           #+#    #+#             */
-/*   Updated: 2025/06/25 18:30:07 by fyudris          ###   ########.fr       */
+/*   Updated: 2025/06/25 21:39:34 by fyudris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,7 @@ void	unpack_sprite(t_img *dest, t_img *src, t_vector pos)
 
 /**
  * @brief Scales a small source image onto a larger destination image.
- * @details This function uses the "Nearest Neighbor" algorithm. It has been
- * refactored to use `t_vector` structs to hold coordinates and ratios,
- * keeping the variable count compliant with the Norm (3 variables).
+ * @details This function uses the "Nearest Neighbor" algorithm.
  *
  * @param dest The destination image (must be pre-allocated and larger).
  * @param src The source image (the small sprite).
